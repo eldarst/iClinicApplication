@@ -14,7 +14,7 @@
 <body>
 <h1>Add new Patient</h1>
 <hr>
-<form action="#" th:action="@{/uzi/addPatient}" th:object="${thePatient}" method="POST">
+<form action="#" th:action="@{/uzi/savePatient}" th:object="${thePatient}" method="POST">
     <input type="hidden" th:field="*{id}"/>
     <input placeholder="Patient Name" th:field="*{patientName}" type="text" class="form-control col-4 mb-4">
     <input placeholder="Doctor Name" th:field="*{doctorName}" type="text" class="form-control col-4 mb-4">

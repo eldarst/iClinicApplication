@@ -21,11 +21,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Integer getMaxOrderNum() {
-        return orderRepository.findMaxOrderNum();
-    }
-
-    @Override
     public void saveOrder(Order theOrder) {
         theOrder.setOrderDate(Methods.getTodaysDate());
         orderRepository.save(theOrder);
@@ -52,6 +47,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    @Override
+    public void deleteOrder(Long orderId) {
+        Order order = orderRepository.getById(orderId);
+        orderRepository.delete(order);
     }
 
 }

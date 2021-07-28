@@ -22,28 +22,24 @@
     <table class="table table-striped table-bordered table-hover">
         <thead class="thead-dark">
         <tr>
-            <th scope="col">Patient Name</th>
-            <th scope="col">Doctor Name</th>
-            <th scope="col">Order Date</th>
-            <th scope="col">Order</th>
-            <th scope="col">Sum</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Create Date</th>
             <th scope="col">Action</th>
         </tr>
         </thead>
 
         <tbody>
-        <tr th:each="tempPatient: ${theListOfPatients}">
-            <td th:text="${tempPatient.patientName}"/>
-            <td th:text="${tempPatient.doctorName}"/>
-            <td th:text="${tempPatient.orderDate}"/>
-            <td th:text="${tempPatient.showProductList()}"/>
-            <td th:text="${tempPatient.sum}"/>
+        <tr th:each="tempProduct: ${theListOfProduct}">
+            <td th:text="${tempProduct.name}"/>
+            <td th:text="${tempProduct.price}"/>
+            <td th:text="${tempProduct.createDate}"/>
             <td>
-                <a th:href="@{/uzi/showFormForEditPatient(orderId=${tempPatient.id})}"
+                <a th:href="@{/uzi/showFormForEditProduct(productCode=${tempProduct.code})}"
                    class="btn btn-info btn-sm">Update</a>
-                <a th:href="@{/uzi/deleteOrder(orderId=${tempPatient.id})}"
+                <a th:href="@{/uzi/deleteProduct(productCode=${tempProduct.code})}"
                    class="btn btn-danger btn-sm"
-                   onclick="if(!(confirm('Are your sure want to delete the Order?'))) return false">Delete</a>
+                   onclick="if(!(confirm('Are your sure want to delete the Product?'))) return false">Delete</a>
             </td>
         </tr>
 
@@ -51,7 +47,7 @@
     </table>
     <div class="container-box rotated">
         <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">
-            Add Patient
+            Add Product
         </button>
     </div>
     <!-- Modal -->
@@ -66,31 +62,23 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <form id="reused_form" role="form" action="#" th:action="@{/uzi/savePatient}"
-                          th:object="${thePatient}" method="POST">
-                        <input type="hidden" th:field="*{id}"/>
+                    <form id="reused_form" role="form" action="#" th:action="@{/uzi/addProduct}"
+                          th:object="${theProduct}" method="POST">
+                        <input type="hidden" th:field="*{code}"/>
+                        <input type="hidden" th:field="*{frequency}" />
                         <div class="form-group">
-                            <label> Patient Name:</label>
-                            <input placeholder="Patient Name" th:field="*{patientName}" type="text" class="form-control" required maxlength="50">
+                            <label> Name:</label>
+                            <input placeholder="Name" th:field="*{name}" type="text" class="form-control" required maxlength="50">
                         </div>
                         <div class="form-group">
-                            <label> Doctor Name:</label>
-                            <input placeholder="Doctor Name" th:field="*{doctorName}" type="text" class="form-control" required maxlength="50">
+                            <label> Price:</label>
+                            <input placeholder="Price" th:field="*{price}" type="number" class="form-control" required maxlength="50">
                         </div>
-                        <div class="form-group">
-                            <ul>
-                                <li th:each="product : ${theListOfProduct}">
-                                    <input type="checkbox" th:field="*{productList}" th:value="${product.code}"/>
-                                    <label th:text="${product}"></label>
-                                </li>
-                            </ul>
-                        </div>
-                        <button type="submit" class="btn btn-lg btn-success btn-block">Save</button>
+                        <button type="submit" class="btn btn-lg btn-success btn-block" >Save</button>
                     </form>
-                    <div id="success_message" style="width:100%; height:100%; display:none; "><h3>Sent your message
+                    <div id="success_message" style="width:100%; height:100%; display:none; "><h3>Saved
                         successfully!</h3></div>
-                    <div id="error_message" style="width:100%; height:100%; display:none; "><h3>Error</h3> Sorry there
-                        was an error sending your form.
+                    <div id="error_message" style="width:100%; height:100%; display:none; "><h3>Error</h3> Error occurred while saving
                     </div>
                 </div>
             </div>

@@ -50,24 +50,30 @@ public class MainController {
         return "list-patients";
     }
 
-    @GetMapping("/showFormForAddPatient")
-    public String showPatientAddForm(Model theModel) {
+    @GetMapping("/showFormForEditPatient")
+    public String showPatientEditForm(@RequestParam("orderId") long theId, Model theModel) {
 
-        Order theOrder = new Order();
+        Order theOrder = orderService.findOrder(theId);
 
         theModel.addAttribute("thePatient", theOrder);
         theModel.addAttribute("theListOfProduct", productService.findProductList());
 
-        return "add-patient";
+        return "edit-patient";
     }
 
-    @PostMapping("/addPatient")
-    public String AddPatient(@ModelAttribute("thePatient") Order thePatient){
-                             //@RequestParam List<String> productCodes) {
-        if(thePatient != null) {
+    @PostMapping("/savePatient")
+    public String AddPatient(@ModelAttribute("thePatient") Order thePatient) {
+        //@RequestParam List<String> productCodes) {
+        if (thePatient != null) {
             thePatient.calculateSum();
             orderService.saveOrder(thePatient);
         }
+        return "redirect:/uzi/listTodayOrders";
+    }
+
+    @GetMapping("/deleteOrder")
+    public String deletePatient(@RequestParam("orderId") long orderId) {
+        orderService.deleteOrder(orderId);
         return "redirect:/uzi/listTodayOrders";
     }
 
@@ -80,11 +86,33 @@ public class MainController {
 
     @PostMapping("/addProduct")
     public String AddProduct(@ModelAttribute("theProduct") Product theProduct) throws ParseException {
-        if(theProduct != null) {
+        if (theProduct != null) {
             theProduct.setFrequency(0);
             productService.save(theProduct);
         }
-        return "redirect:/uzi/listTodayOrders";
+        return "redirect:/uzi/listProducts";
+    }
+
+    @GetMapping("/listProducts")
+    public String getProductList(Model theModel) {
+        theModel.addAttribute("theProduct", new Product());
+        theModel.addAttribute("theListOfProduct", productService.findProductList());
+
+        return "list-product";
+    }
+
+    @GetMapping("/deleteProduct")
+    public String deleteProduct(@RequestParam("productCode") long productCode) {
+        productService.delete(productCode);
+        return "redirect:/uzi/listProducts";
+    }
+
+    @GetMapping("/showFormForEditProduct")
+    public String showProductEditForm(@RequestParam("productCode") long productCode, Model theModel) {
+        Product product = productService.findProduct(productCode);
+
+        theModel.addAttribute("theProduct", product);
+        return "add-product";
     }
 
 }
