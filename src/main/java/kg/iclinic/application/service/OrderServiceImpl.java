@@ -55,4 +55,11 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
+    @Override
+    public List<Order> getSortedOrders(Date dateForm, Date dateTo, String name) {
+        return (name.length() > 0)
+                ? orderRepository.findByOrderDateBetweenAndPatientName(dateForm, dateTo, name)
+                : orderRepository.findByOrderDateBetween(dateForm, dateTo);
+    }
+
 }

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>List of Patients</title>
+    <title>Product form</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -11,7 +11,7 @@
 
 </head>
 <body>
-<h1>Add new Patient</h1>
+<h1>Add new Product</h1>
 <hr>
 <form action="#" th:action="@{/uzi/addProduct}" th:object="${theProduct}" method="POST">
     <input type="hidden" th:field="*{code}" />

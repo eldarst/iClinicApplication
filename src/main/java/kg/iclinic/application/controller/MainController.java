@@ -1,8 +1,10 @@
 package kg.iclinic.application.controller;
 
+import kg.iclinic.application.entity.Doctor;
 import kg.iclinic.application.entity.Order;
 import kg.iclinic.application.entity.Product;
 import kg.iclinic.application.service.AccountService;
+import kg.iclinic.application.service.DoctorService;
 import kg.iclinic.application.service.OrderService;
 import kg.iclinic.application.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +12,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 @RequestMapping("/uzi")
@@ -25,6 +31,9 @@ public class MainController {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    DoctorService doctorService;
 
     @RequestMapping("/403")
     public String accessDenied() {
@@ -66,6 +75,9 @@ public class MainController {
         //@RequestParam List<String> productCodes) {
         if (thePatient != null) {
             thePatient.calculateSum();
+            String doctorName = thePatient.getDoctorName();
+            doctorService.save(doctorName);
+
             orderService.saveOrder(thePatient);
         }
         return "redirect:/uzi/listTodayOrders";
@@ -113,6 +125,32 @@ public class MainController {
 
         theModel.addAttribute("theProduct", product);
         return "add-product";
+    }
+
+    @GetMapping("/showSortByDateForm")
+    public String showSortByDateForm(Model theModel) {
+        theModel.addAttribute("dateFrom", new Date());
+        theModel.addAttribute("dateTo", new Date());
+        theModel.addAttribute("doctorName", new String());
+
+        return "sort-by-date";
+    }
+
+    @RequestMapping("/listOrderBetweenDates")
+    public String getOrdersBetweenDates(@RequestParam(value = "dateFrom") String dateFrom,
+                                        @RequestParam(value = "dateTo") String dateTo,
+                                        @RequestParam(value = "doctorName", required = false) String doctor,
+                                        Model theModel) throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat(
+                "MM/dd/yyyy", Locale.US);
+
+        List<Order> sortedOrders = orderService.getSortedOrders(dateFormat.parse(dateFrom), dateFormat.parse(dateTo), "");
+        System.out.println(sortedOrders.size() + " and " + sortedOrders + " " + dateFormat.parse(dateFrom) + " - " + dateFrom + dateFormat.parse(dateTo) + " - " + dateTo);
+        theModel.addAttribute("theListOfPatients", sortedOrders);
+
+        theModel.addAttribute("thePatient", new Order());
+        theModel.addAttribute("theListOfProduct", productService.findProductList());
+        return "list-patients";
     }
 
 }

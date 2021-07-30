@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>List of Patients</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>List of Patients</h1>
+    <hr>
+    <form action="#" th:action="@{/uzi/listOrderBetweenDates}">
+        <div class='col-md-5'>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker6'>
+                    <input type='text' class="form-control" th:name="dateFrom"/>
+                    <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-5'>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker7'>
+                    <input type='text' class="form-control" th:name="dateTo"/>
+                    <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" th:name="doctorName">
+        <button type="submit" class="btn btn-info col-2">Save</button>
+    </form>
+</div>
+<script type="text/javascript">
+   $(function () {
+       $('#datetimepicker6').datetimepicker();
+       $('#datetimepicker7').datetimepicker({
+   useCurrent: false //Important! See issue #1075
+   });
+       $("#datetimepicker6").on("dp.change", function (e) {
+           $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+       });
+       $("#datetimepicker7").on("dp.change", function (e) {
+           $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+       });
+   });
+
+    </script>
+</body>
+
+</html>

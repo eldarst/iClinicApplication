@@ -12,4 +12,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     public List<Order> findByOrderDate(Date now);
 
     List<Order> findByOrderDateBetweenAndPatientName(Date start, Date end, String patientName);
+    List<Order> findByOrderDateBetween(Date start, Date end);
 }
