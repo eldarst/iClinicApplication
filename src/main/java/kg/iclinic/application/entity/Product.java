@@ -1,9 +1,9 @@
 package kg.iclinic.application.entity;
 
-import kg.iclinic.application.model.Methods;
+
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "Products")
 @Data
+@NoArgsConstructor
 public class Product implements Serializable {
 
     private static final long serialVersionUID = -1000119078147252957L;
@@ -23,17 +24,17 @@ public class Product implements Serializable {
     private long code;
 
     @Column(name = "Name", length = 255, nullable = false)
-    private String name;
+    @NonNull private String name;
 
     @Column(name = "Price", nullable = false)
-    private Double price;
+    @NonNull private Double price;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "Create_Date", nullable = false)
-    private Date createDate;
+    @NonNull private Date createDate;
 
     @Column(name = "Frequency")
-    private Integer frequency = 0;
+    @NonNull private Integer frequency = 0;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})

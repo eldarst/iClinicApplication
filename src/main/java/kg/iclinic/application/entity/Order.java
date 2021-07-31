@@ -1,7 +1,8 @@
 package kg.iclinic.application.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "Orders")
 @Data
+@NoArgsConstructor
 public class Order implements Serializable {
 
     private static final long serialVersionUID = -2576670215015463100L;
@@ -22,16 +24,16 @@ public class Order implements Serializable {
 
     @Temporal(TemporalType.DATE)
     @Column(name = "Order_Date", nullable = false)
-    private Date orderDate;
+    @NonNull private Date orderDate;
 
     @Column(name = "Patient_Name", length = 255, nullable = false)
-    private String patientName;
+    @NonNull private String patientName;
 
     @Column(name = "Doctor_Name", length = 255, nullable = false)
-    private String doctorName;
+    @NonNull private String doctorName;
 
     @Column(name = "Sum", nullable = false)
-    private double sum;
+    @NonNull private double sum;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})

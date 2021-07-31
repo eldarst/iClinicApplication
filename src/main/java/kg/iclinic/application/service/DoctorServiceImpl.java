@@ -5,6 +5,8 @@ import kg.iclinic.application.entity.Doctor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DoctorServiceImpl implements DoctorService{
 
@@ -30,8 +32,7 @@ public class DoctorServiceImpl implements DoctorService{
     @Override
     public void save(String name) {
         if(!doctorExists(name)) {
-            Doctor doctor = new Doctor();
-            doctor.setName(name);
+            Doctor doctor = new Doctor(name);
             doctorRepository.save(doctor);
         }
     }
@@ -45,5 +46,10 @@ public class DoctorServiceImpl implements DoctorService{
     @Override
     public void findDoctor() {
 
+    }
+
+    @Override
+    public List<Doctor> findListOfDoctors() {
+        return doctorRepository.findAll();
     }
 }

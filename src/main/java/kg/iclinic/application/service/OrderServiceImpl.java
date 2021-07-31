@@ -58,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getSortedOrders(Date dateForm, Date dateTo, String name) {
         return (name.length() > 0)
-                ? orderRepository.findByOrderDateBetweenAndPatientName(dateForm, dateTo, name)
+                ? orderRepository.findByOrderDateBetweenAndDoctorName(dateForm, dateTo, name)
                 : orderRepository.findByOrderDateBetween(dateForm, dateTo);
     }
 
