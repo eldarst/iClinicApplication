@@ -10,9 +10,6 @@ import java.io.Serializable;
 @Table(name = "Accounts")
 @Data
 public class Account implements Serializable {
-
-    private static final long serialVersionUID = -2054386655979281969L;
-
     public static final String ROLE_MANAGER = "MANAGER";
     public static final String ROLE_EMPLOYEE = "EMPLOYEE";
 

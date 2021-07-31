@@ -23,7 +23,7 @@ public class Product implements Serializable {
     @Column(name = "Code", length = 20, nullable = false)
     private long code;
 
-    @Column(name = "Name", length = 255, nullable = false)
+    @Column(name = "Name", nullable = false)
     @NonNull private String name;
 
     @Column(name = "Price", nullable = false)

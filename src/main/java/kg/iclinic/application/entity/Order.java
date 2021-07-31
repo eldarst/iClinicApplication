@@ -26,10 +26,10 @@ public class Order implements Serializable {
     @Column(name = "Order_Date", nullable = false)
     @NonNull private Date orderDate;
 
-    @Column(name = "Patient_Name", length = 255, nullable = false)
+    @Column(name = "Patient_Name", nullable = false)
     @NonNull private String patientName;
 
-    @Column(name = "Doctor_Name", length = 255, nullable = false)
+    @Column(name = "Doctor_Name", nullable = false)
     @NonNull private String doctorName;
 
     @Column(name = "Sum", nullable = false)
@@ -43,17 +43,17 @@ public class Order implements Serializable {
     private List<Product> productList;
 
     public String showProductList() {
-        String result = new String();
+        StringBuilder result = new StringBuilder();
         boolean firstElement = true;
         for(Product product: productList){
             if(firstElement) {
-                result += product.getName();
+                result.append(product.getName());
                 firstElement = false;
             } else {
-                result += ", " + product.getName();
+                result.append(", ").append(product.getName());
             }
         }
-        return result;
+        return result.toString();
     }
 
     public void calculateSum() {

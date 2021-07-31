@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
+
 @Controller
 @RequestMapping("/uzi")
 public class MainController {
@@ -49,6 +51,9 @@ public class MainController {
     @GetMapping("/listTodayOrders")
     public String getTodayOrders(Model theModel) throws ParseException {
 
+        SimpleDateFormat formatter = new SimpleDateFormat(
+                "dd/MM/yyyy");
+        theModel.addAttribute("theDate", formatter.parse(formatter.format(new Date())).toString());
         theModel.addAttribute("theListOfPatients", orderService.getTodayOrders());
 
         Order theOrder = new Order();
