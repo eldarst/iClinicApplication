@@ -6,7 +6,6 @@ import kg.iclinic.application.service.AccountService;
 import kg.iclinic.application.service.DoctorService;
 import kg.iclinic.application.service.OrderService;
 import kg.iclinic.application.service.ProductService;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -146,17 +145,11 @@ public class MainController {
         Date firstDate = dateFormat.parse(dateFrom);
         Date secondDate = dateFormat.parse(dateTo);
         List<Order> sortedOrders = orderService.getSortedOrders(firstDate, secondDate, doctor);
-
-        System.out.println(doctor);
-        System.out.println(doctorService.findListOfDoctors().size() + " " + doctorService.findListOfDoctors());
         theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());
         theModel.addAttribute("theListOfPatients", sortedOrders);
         theModel.addAttribute("dateFrom", firstDate);
         theModel.addAttribute("dateTo", secondDate);
         theModel.addAttribute("doctorName", doctor);
-
-        theModel.addAttribute("thePatient", new Order());
-        theModel.addAttribute("theListOfProduct", productService.findProductList());
         return "sort-by-date";
     }
 
