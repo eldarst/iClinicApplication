@@ -15,4 +15,5 @@ public interface OrderService {
     public List<Order> getAllOrders();
     public void deleteOrder(Long orderId);
     List<Order> getSortedOrders(Date dateForm, Date dateTo, String name);
+    double countSalary(List<Order> ordersOfDoctor);
 }

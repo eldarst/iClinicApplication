@@ -62,4 +62,13 @@ public class OrderServiceImpl implements OrderService {
                 : orderRepository.findByOrderDateBetween(dateForm, dateTo);
     }
 
+    @Override
+    public double countSalary(List<Order> ordersOfDoctor) {
+        double result = 0;
+        for(Order order: ordersOfDoctor) {
+            result += order.getSum();
+        }
+        return result;
+    }
+
 }

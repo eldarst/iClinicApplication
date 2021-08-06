@@ -1,5 +1,6 @@
 package kg.iclinic.application.controller;
 
+import kg.iclinic.application.entity.Doctor;
 import kg.iclinic.application.entity.Order;
 import kg.iclinic.application.entity.Product;
 import kg.iclinic.application.service.AccountService;
@@ -14,12 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
+import java.util.*;
 
 @Controller
 @RequestMapping("/uzi")
@@ -135,7 +131,8 @@ public class MainController {
     public String showSortByDateForm(Model theModel) {
         theModel.addAttribute("dateFrom", new Date());
         theModel.addAttribute("dateTo", new Date());
-        theModel.addAttribute("doctorName", new String());
+        theModel.addAttribute("doctorName", "");
+        theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());
         theModel.addAttribute("theListOfPatients", new ArrayList<Order>());
         return "sort-by-date";
     }
@@ -147,15 +144,60 @@ public class MainController {
                                         Model theModel) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat(
                 "MM/dd/yyyy", Locale.US);
-        Date firstDate = dateFormat.parse(dateFrom);
-        Date secondDate = dateFormat.parse(dateTo);
+        Date firstDate = new Date();
+        Date secondDate = new Date();
+        if(dateFrom.length() > 0 && dateTo.length() > 0) {
+             firstDate = dateFormat.parse(dateFrom);
+             secondDate = dateFormat.parse(dateTo);
+        }
         List<Order> sortedOrders = orderService.getSortedOrders(firstDate, secondDate, doctor);
-        theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());
+
         theModel.addAttribute("theListOfPatients", sortedOrders);
+        theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());
         theModel.addAttribute("dateFrom", firstDate);
         theModel.addAttribute("dateTo", secondDate);
         theModel.addAttribute("doctorName", doctor);
         return "sort-by-date";
     }
+
+    @GetMapping("/showSalariesBetweenDatesForm")
+    public String showSalariesBetweenDatesForm(Model theModel) {
+        theModel.addAttribute("dateFrom", new Date());
+        theModel.addAttribute("dateTo", new Date());
+        return "salary-by-date";
+    }
+
+    @RequestMapping("/listSalariesBetweenDates")
+    public String getSalariesBetweenDates(@RequestParam(value = "dateFrom", required = false) String dateFrom,
+                                          @RequestParam(value = "dateTo", required = false) String dateTo,
+                                          Model theModel) throws ParseException{
+        DateFormat dateFormat = new SimpleDateFormat(
+                "MM/dd/yyyy", Locale.US);
+        Date firstDate = new Date();
+        Date secondDate = new Date();
+        if(dateFrom.length() > 0 && dateTo.length() > 0) {
+            firstDate = dateFormat.parse(dateFrom);
+            secondDate = dateFormat.parse(dateTo);
+        }
+        HashMap<String, Double> doctorsSalaries = GetMappedSalary(firstDate, secondDate);
+
+        theModel.addAttribute("theListOfDoctorsWithSalaries", doctorsSalaries);
+        theModel.addAttribute("dateFrom", firstDate);
+        theModel.addAttribute("dateTo", secondDate);
+        return "salary-by-date";
+    }
+
+    private HashMap<String, Double> GetMappedSalary(Date dateFrom, Date dateTo) {
+        List<Doctor> doctors = doctorService.findListOfDoctors();
+        HashMap<String, Double> result = new HashMap<>();
+        for(Doctor doctor: doctors) {
+            List<Order> sortedOrders = orderService.getSortedOrders(dateFrom, dateTo, doctor.getName());
+            if(sortedOrders.size() > 0)
+                result.put(doctor.getName(),
+                        (double) Math.round(orderService.countSalary(sortedOrders) * 0.2));
+        }
+        return result;
+    }
+
 
 }
