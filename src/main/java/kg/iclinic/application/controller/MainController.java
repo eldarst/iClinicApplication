@@ -1,5 +1,6 @@
 package kg.iclinic.application.controller;
 
+import javafx.util.Pair;
 import kg.iclinic.application.entity.Doctor;
 import kg.iclinic.application.entity.Order;
 import kg.iclinic.application.entity.Product;
@@ -15,7 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
+
+import static java.time.DayOfWeek.MONDAY;
+import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 @Controller
 @RequestMapping("/uzi")
@@ -179,7 +184,7 @@ public class MainController {
             firstDate = dateFormat.parse(dateFrom);
             secondDate = dateFormat.parse(dateTo);
         }
-        HashMap<String, Double> doctorsSalaries = GetMappedSalary(firstDate, secondDate);
+        HashMap<String, Pair<Double, Integer>> doctorsSalaries = GetMappedSalary(firstDate, secondDate);
 
         theModel.addAttribute("theListOfDoctorsWithSalaries", doctorsSalaries);
         theModel.addAttribute("dateFrom", firstDate);
@@ -187,14 +192,31 @@ public class MainController {
         return "salary-by-date";
     }
 
-    private HashMap<String, Double> GetMappedSalary(Date dateFrom, Date dateTo) {
+    @GetMapping("/listCurrentWeekSalary")
+    public String getCurrentWeekSalaries(Model theModel) {
+        Date firstDayOfWeek = GetFirstDayOfTheWeek();
+        System.out.println(firstDayOfWeek);
+        HashMap<String, Pair<Double, Integer>> doctorsSalaries = GetMappedSalary(firstDayOfWeek, new Date());
+        theModel.addAttribute("theListOfDoctorsWithSalaries", doctorsSalaries);
+        return "current-week-salary";
+    }
+
+    private Date GetFirstDayOfTheWeek() {
+        LocalDate today = LocalDate.now();
+
+        LocalDate monday = today.with(previousOrSame(MONDAY));
+        //LocalDate sunday = today.with(nextOrSame(SUNDAY));
+        return java.sql.Date.valueOf(monday);
+    }
+
+    private HashMap<String, Pair<Double, Integer>> GetMappedSalary(Date dateFrom, Date dateTo) {
         List<Doctor> doctors = doctorService.findListOfDoctors();
-        HashMap<String, Double> result = new HashMap<>();
+        HashMap<String, Pair<Double, Integer>> result = new HashMap<>();
         for(Doctor doctor: doctors) {
             List<Order> sortedOrders = orderService.getSortedOrders(dateFrom, dateTo, doctor.getName());
             if(sortedOrders.size() > 0)
                 result.put(doctor.getName(),
-                        (double) Math.round(orderService.countSalary(sortedOrders) * 0.2));
+                        new Pair<>((double) Math.round(orderService.countSalary(sortedOrders) * 0.2), sortedOrders.size()));
         }
         return result;
     }

@@ -54,6 +54,7 @@
         <tr>
             <th scope ="col">#</th>
             <th scope="col">Doctor</th>
+            <th scope="col">Patients</th>
             <th scope="col">Salary</th>
         </tr>
         </thead>
@@ -61,7 +62,8 @@
         <tr th:each="doctor, stat: ${theListOfDoctorsWithSalaries}">
             <td th:text="${stat.index + 1}"/>
             <td th:text="${doctor.key}"/>
-            <td th:text="${doctor.value}"/>
+            <th th:text="${doctor.value.value}"/>
+            <td th:text="${doctor.value.key}"/>
         </tr>
         </tbody>
     </table>
