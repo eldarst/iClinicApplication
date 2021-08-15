@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Details of List</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+</head>
+<body>
+<div class="container" th:object="${stats}">
+    <h1>Детали обеследований
+        <br>
+        <label th:text="${#calendars.format(day, 'dd MMM yyyy')}"/>
+    </h1>
+    <hr>
+    <div class="form-group">
+        <label>Общая сумма обследований: </label><label th:text="*{totalSum}"/>
+    </div>
+    <div class="form-group">
+        <label>Зарплата узиста: </label><label th:text="*{uziTotalSum}"/>
+    </div>
+    <div class="form-group">
+        <label>Зарплата врачам: </label><label th:text="*{doctorTotalSum}"/>
+    </div>
+    <div class="form-group">
+        <label>Общее количество пациентов: </label><label th:text="*{totalPatients}"/>
+    </div>
+    <div class="form-group">
+        <label>Количество неизв пациентов: </label><label th:text="*{unknownPatients}"/>
+    </div>
+    <div class="form-group">
+        <label>Сумма обследований с неизв пациентами: </label><label th:text="*{unknownPatientsTotalSum}"/>
+    </div>
+    <div class="form-group">
+        <label>Самое дорогое обследование: </label><label th:text="*{maxOrder}"/>
+    </div>
+    <div class="form-group">
+        <label>Средняя стоимость обследования: </label><label th:text="*{averageOrder}"/>
+    </div>
+    <div class="form-group">
+        <label>Самое большое количество направлений(Доктор): </label><label th:text="*{mostFrequentDoctor}"/> <label> с количеством: </label><label th:text="*{mostFrequentDoctorCount}"/>
+    </div>
+    <div class="form-group">
+        <label>Самое большое количество направлений(Продукт): </label><label th:text="*{mostFrequentProduct}"/> <label> в количестве: </label><label th:text="*{mostFrequentProductCount}"/>
+    </div>
+
+    <a th:href="@{/uzi/showDetailsOfOrderList(dayBefore=${dayBefore}+1, dayAfter=${dayAfter})}"
+       class="btn btn-info btn-sm">Прошлый день</a>
+
+    <a th:href="@{/uzi/showDetailsOfOrderList(dayBefore=${dayBefore},dayAfter=${dayAfter}+1)}"
+       class="btn btn-info btn-sm">Следующий день</a>
+</div>
+
+</body>
+</html>

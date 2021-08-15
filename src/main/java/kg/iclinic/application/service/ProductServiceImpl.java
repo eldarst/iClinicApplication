@@ -50,6 +50,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> findProductList() {
-        return productRepository.findByOrderByFrequency();
+        return productRepository.findByOrderByFrequencyDesc();
     }
 }

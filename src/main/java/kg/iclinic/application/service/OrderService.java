@@ -8,12 +8,11 @@ import java.util.Date;
 import java.util.List;
 
 public interface OrderService {
-    public void saveOrder(Order theOrder);
-    public Order findOrder(Long orderId);
-    public List<Product> listProducts(Long orderId);
-    public List<Order> getTodayOrders() throws ParseException;
-    public List<Order> getAllOrders();
-    public void deleteOrder(Long orderId);
+    void saveOrder(Order theOrder);
+    Order findOrder(Long orderId);
+    List<Order> getTodayOrders() throws ParseException;
+    List<Order> getOrdersByDay(Date date);
+    void deleteOrder(Long orderId);
     List<Order> getSortedOrders(Date dateForm, Date dateTo, String name);
     double countSalary(List<Order> ordersOfDoctor);
 }

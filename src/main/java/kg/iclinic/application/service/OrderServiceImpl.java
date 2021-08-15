@@ -2,12 +2,10 @@ package kg.iclinic.application.service;
 
 import kg.iclinic.application.dao.OrderRepository;
 import kg.iclinic.application.entity.Order;
-import kg.iclinic.application.entity.Product;
 import kg.iclinic.application.model.Methods;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,12 +29,6 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.getById(orderId);
     }
 
-    @Override
-    public List<Product> listProducts(Long orderId) {
-        List<Product> productList = new ArrayList<>();
-
-        return productList;
-    }
 
     @Override
     public List<Order> getTodayOrders() {
@@ -45,8 +37,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<Order> getOrdersByDay(Date date) {
+        return orderRepository.findByOrderDate(date);
     }
 
     @Override
@@ -70,5 +62,6 @@ public class OrderServiceImpl implements OrderService {
         }
         return result;
     }
+
 
 }
