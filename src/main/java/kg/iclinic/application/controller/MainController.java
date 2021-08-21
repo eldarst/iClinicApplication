@@ -1,9 +1,6 @@
 package kg.iclinic.application.controller;
 
-import javafx.util.Pair;
-import kg.iclinic.application.entity.Doctor;
 import kg.iclinic.application.entity.Order;
-import kg.iclinic.application.model.Methods;
 import kg.iclinic.application.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -117,6 +114,7 @@ public class MainController {
         }
         List<Order> sortedOrders = orderService.getSortedOrders(firstDate, secondDate, (doctor != null) ? doctor : "" );
 
+        theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());
         theModel.addAttribute("theListOfPatients", sortedOrders);
         theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());
         theModel.addAttribute("dateFrom", firstDate);
