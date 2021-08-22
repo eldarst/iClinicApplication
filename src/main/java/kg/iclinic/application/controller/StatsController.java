@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Function;
 
@@ -43,17 +44,26 @@ public class StatsController {
     private static StatsPeriod monthStats = new StatsPeriod((lastDay) -> lastDay.withDayOfMonth(1),
             (periodStart) -> periodStart.with(nextOrSame(SUNDAY)),
             (period) -> period.plusDays(1),
+            (date) -> {
+                WeekFields weekFields = WeekFields.of(Locale.getDefault());
+                return date.get(weekFields.weekOfMonth());
+            },
             (date) -> date.getDayOfWeek().getValue(),
             0,
-            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4")),
+            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5")),
             new ArrayList<>(Arrays.asList("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье")) );
 
     private static StatsPeriod yearStats = new StatsPeriod((lastDay) -> lastDay.withDayOfYear(1),
             (periodStart) -> periodStart.withDayOfMonth(periodStart.lengthOfMonth()),
             (period) -> period.plusWeeks(1),
-            (date) -> date.getDayOfMonth(), 6,
+            LocalDate::getMonthValue,
+            (date) -> {
+                WeekFields weekFields = WeekFields.of(Locale.getDefault());
+                return date.get(weekFields.weekOfMonth());
+            },
+            6,
             new ArrayList<>(Arrays.asList("Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь")),
-            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4")));
+            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5")));
 
     @GetMapping("/showDetailsOfOrderList")
     public String showDetailsOfTodayOrderList(@RequestParam(value = "dayBefore", required = false) Integer dayBeforeCount,

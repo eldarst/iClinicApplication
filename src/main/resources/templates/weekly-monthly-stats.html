@@ -79,14 +79,14 @@
                                         </thead>
                                         <tbody th:each="currentPeriodStat: ${stats}">
                                         <tr>
-                                            <td>Week</td>
-                                            <td th:text="${currentPeriodStat.key.totalSum}"/>
-                                            <td th:text="${currentPeriodStat.key.uziTotalSum}"/>
-                                            <td th:text="${currentPeriodStat.key.totalPatients}"/>
-                                            <td th:text="${currentPeriodStat.key.maxOrder}"/>
-                                            <td th:text="${currentPeriodStat.key.averageOrder}"/>
-                                            <td th:text="${currentPeriodStat.key.mostFrequentDoctor}"/>
-                                            <td th:text="${currentPeriodStat.key.mostFrequentProduct}"/>
+                                            <td th:text="${currentPeriodStat.key.key}"/>
+                                            <td th:text="${currentPeriodStat.key.value.totalSum}"/>
+                                            <td th:text="${currentPeriodStat.key.value.uziTotalSum}"/>
+                                            <td th:text="${currentPeriodStat.key.value.totalPatients}"/>
+                                            <td th:text="${currentPeriodStat.key.value.maxOrder}"/>
+                                            <td th:text="${currentPeriodStat.key.value.averageOrder}"/>
+                                            <td th:text="${currentPeriodStat.key.value.mostFrequentDoctor}"/>
+                                            <td th:text="${currentPeriodStat.key.value.mostFrequentProduct}"/>
                                             <td class="show-details"><i class="glyphicon glyphicon-plus"></i></td>
                                         </tr>
                                         <tr class="hideRow">

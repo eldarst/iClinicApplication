@@ -103,9 +103,16 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     public DailyStats getStatsByDate(Date dateFrom, Date dateTo) {
         DailyStats stats = dailyStatsRepository.findByDateFromAndDateTo(dateFrom, dateTo);
         Date today = new Date();
-        if (stats != null) {
+        if (stats != null && stats.getTotalSum() > 0) {
             return stats;
-        } else if(stats == null && today.after(dateFrom)){
+        } else if( stats != null && stats.getTotalSum() == 0) {
+            dailyStatsRepository.delete(stats);
+            List<Order> orders = orderService.getSortedOrders(dateFrom, dateTo,"");
+            DailyStats statistics = getStatistics(orders, dateFrom, dateTo);
+            dailyStatsRepository.save(statistics);
+            return statistics;
+        }
+        else if(stats == null && today.after(dateFrom)){
             List<Order> orders = orderService.getSortedOrders(dateFrom, dateTo,"");
             DailyStats statistics = getStatistics(orders, dateFrom, dateTo);
             dailyStatsRepository.save(statistics);
@@ -115,28 +122,29 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     }
 
     @Override
-    public Map<DailyStats, Map<String, DailyStats>> getPeriodStats(Date lastDayOfPeriod, StatsPeriod periodFunctions) {
-        Map<DailyStats, Map<String, DailyStats>> stats = new HashMap<>();
+    public LinkedHashMap<Pair<String,DailyStats>, LinkedHashMap<String, DailyStats>> getPeriodStats(Date lastDayOfPeriod, StatsPeriod periodFunctions) {
+        LinkedHashMap<Pair<String,DailyStats>, LinkedHashMap<String, DailyStats>> stats = new LinkedHashMap<>();
         LocalDate lastDay = LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(lastDayOfPeriod) );
         FillStats(stats, lastDay, periodFunctions);
         return stats;
     }
 
-    private void FillStats(Map<DailyStats, Map<String, DailyStats>> stats, LocalDate lastDay, StatsPeriod periodFunctions) {
+    private void FillStats(LinkedHashMap<Pair<String,DailyStats>, LinkedHashMap<String, DailyStats>> stats, LocalDate lastDay, StatsPeriod periodFunctions) {
         LocalDate firstDayOfPeriod = periodFunctions.getFirstDayOfAllPeriod().apply(lastDay);
 
         int i = 0;
         for(LocalDate day = firstDayOfPeriod; day.isBefore(lastDay);) {
-            String subPeriodName = periodFunctions.getSubPeriodNames().get(i++ % periodFunctions.getSubPeriodNames().size());
+            int periodCount = periodFunctions.getPeriodCount().apply(day) - 1;
+            String periodName = periodFunctions.getPeriodNames().get(periodCount);
             LocalDate periodEnd = periodFunctions.getEndOfSubPeriod().apply(day);
             if(periodEnd.isBefore(lastDay)) {
-                Map<String, DailyStats> detailStats = GetPeriodStats(day, periodEnd, periodFunctions);
-                stats.put(getStatsByDate(parseLocal.apply(day), parseLocal.apply(periodEnd)),
+                LinkedHashMap<String, DailyStats> detailStats = (LinkedHashMap<String, DailyStats>) GetPeriodStats(day, periodEnd, periodFunctions);
+                stats.put(new Pair<>(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(periodEnd))),
                         detailStats);
                 day = periodEnd.plusDays(1);
             } else {
-                Map<String, DailyStats> detailStats = GetPeriodStats(day, lastDay, periodFunctions);
-                stats.put(getStatsByDate(parseLocal.apply(day), parseLocal.apply(lastDay)),
+                LinkedHashMap<String, DailyStats> detailStats = (LinkedHashMap<String, DailyStats>) GetPeriodStats(day, lastDay, periodFunctions);
+                stats.put(new Pair<>(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(lastDay))),
                         detailStats);
                 day = lastDay;
             }
@@ -144,12 +152,14 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     }
 
     private Map<String, DailyStats> GetPeriodStats(LocalDate firstDay, LocalDate periodEnd, StatsPeriod periodFunctions) {
-        Map<String, DailyStats> periodStats = new HashMap<>();
-        for(LocalDate day = firstDay; day.isBefore(periodEnd); day = periodFunctions.getSubPeriodIncrementing().apply(day)) {
+        Map<String, DailyStats> periodStats = new LinkedHashMap<>();
+        LocalDate last = periodFunctions.getSubPeriodIncrementing().apply(periodEnd);
+        for(LocalDate day = firstDay; day.isBefore(last); day = periodFunctions.getSubPeriodIncrementing().apply(day)) {
             Date dateFrom = parseLocal.apply(day);
             Date dateTo = parseLocal.apply(day.plusDays(periodFunctions.getPeriod()));
+            int subPeriodCount = periodFunctions.getSubPeriodCount().apply(day) - 1;
             periodStats.put(periodFunctions.getSubPeriodNames()
-                            .get(periodFunctions.getSubPeriodName().apply(day) - 1),
+                            .get(subPeriodCount),
                     getStatsByDate(dateFrom, dateTo));
         }
         return periodStats;

@@ -16,7 +16,9 @@ public class StatsPeriod {
 
     private Function<LocalDate, LocalDate> subPeriodIncrementing;
 
-    private Function<LocalDate, Integer> SubPeriodName;
+    private Function<LocalDate, Integer> periodCount;
+
+    private Function<LocalDate, Integer> SubPeriodCount;
 
     private int period;
 
