@@ -16,6 +16,8 @@ import java.util.*;
 @Controller
 @RequestMapping("/uzi")
 public class MainController {
+    private static DateFormat dateFormat = new SimpleDateFormat(
+            "MM/dd/yyyy", Locale.US);
 
     @Autowired
     AccountService accountService;
@@ -43,26 +45,20 @@ public class MainController {
 
     @GetMapping("/listTodayOrders")
     public String getTodayOrders(Model theModel) throws ParseException {
-
-        SimpleDateFormat formatter = new SimpleDateFormat(
-                "dd/MM/yyyy");
-        theModel.addAttribute("theDate", formatter.parse(formatter.format(new Date())).toString());
+        theModel.addAttribute("theDate", dateFormat.parse(dateFormat.format(new Date())).toString());
         List<Order> todayOrders = orderService.getTodayOrders();
         theModel.addAttribute("theListOfPatients", todayOrders);
         theModel.addAttribute("orderSum", orderService.countSalary(todayOrders));
-
         theModel.addAttribute("thePatient", new Order());
         theModel.addAttribute("theListOfProduct", productService.findProductList());
+        theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());
 
         return "list-patients";
     }
 
     @GetMapping("/showFormForEditPatient")
     public String showPatientEditForm(@RequestParam("orderId") long theId, Model theModel) {
-
-        Order theOrder = orderService.findOrder(theId);
-
-        theModel.addAttribute("thePatient", theOrder);
+        theModel.addAttribute("thePatient", orderService.findOrder(theId));
         theModel.addAttribute("theListOfProduct", productService.findProductList());
 
         return "edit-patient";
@@ -74,7 +70,6 @@ public class MainController {
             thePatient.calculateSum();
             String doctorName = thePatient.getDoctorName();
             doctorService.save(doctorName);
-
             orderService.saveOrder(thePatient);
         }
         return "redirect:/uzi/listTodayOrders";
@@ -104,14 +99,8 @@ public class MainController {
                                         @RequestParam(value = "dateTo", required = false) String dateTo,
                                         @RequestParam(value = "doctorName", required = false) String doctor,
                                         Model theModel) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat(
-                "MM/dd/yyyy", Locale.US);
-        Date firstDate = new Date();
-        Date secondDate = new Date();
-        if(dateFrom!= null && dateTo != null) {
-             firstDate = dateFormat.parse(dateFrom);
-             secondDate = dateFormat.parse(dateTo);
-        }
+        Date firstDate = dateFrom!= null ? dateFormat.parse(dateFrom) : new Date();
+        Date secondDate = dateTo != null ? dateFormat.parse(dateTo): new Date();
         List<Order> sortedOrders = orderService.getSortedOrders(firstDate, secondDate, (doctor != null) ? doctor : "" );
 
         theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());

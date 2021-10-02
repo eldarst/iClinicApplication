@@ -53,7 +53,7 @@
             <td/>
             <td th:text="${orderSum}"/>
             <td>
-                <a th:href="@{/uzi/showDetailsOfTodayOrderList}"
+                <a th:href="@{/uzi/showDetailsOfOrderList}"
                    class="btn btn-info btn-sm">Show details</a>
             </td>
         </tr>
@@ -87,7 +87,8 @@
                         </div>
                         <div class="form-group">
                             <label> Doctor Name:</label>
-                            <input placeholder="Doctor Name" th:field="*{doctorName}" type="text" class="form-control"
+                            <input placeholder="Doctor Name" list="doctorOptions" id="doctorDataList"
+                                   th:field="*{doctorName}" type="text" class="form-control"
                                    required maxlength="50">
                             <datalist id="doctorOptions">
                                 <option></option>

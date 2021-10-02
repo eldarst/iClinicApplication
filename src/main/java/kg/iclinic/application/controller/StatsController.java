@@ -39,9 +39,9 @@ public class StatsController {
     @Autowired
     DailyStatsService dailyStatsService;
 
-    private static Function<LocalDate, Date> parseLocal = java.sql.Date::valueOf;
+    private static final Function<LocalDate, Date> parseLocal = java.sql.Date::valueOf;
 
-    private static StatsPeriod monthStats = new StatsPeriod((month) -> month.withDayOfMonth(1),
+    private static final  StatsPeriod monthStats = new StatsPeriod((month) -> month.withDayOfMonth(1),
             (periodStart) -> periodStart.with(nextOrSame(SUNDAY)),
             (period) -> period.plusDays(1),
             (date) -> {
@@ -57,7 +57,7 @@ public class StatsController {
              "Неделя",
              "День недели");
 
-    private static StatsPeriod yearStats = new StatsPeriod((lastDay) -> lastDay.withDayOfYear(1),
+    private static final StatsPeriod yearStats = new StatsPeriod((lastDay) -> lastDay.withDayOfYear(1),
             (periodStart) -> periodStart.withDayOfMonth(periodStart.lengthOfMonth()),
             (period) -> period.plusWeeks(1),
             LocalDate::getMonthValue,
@@ -77,8 +77,6 @@ public class StatsController {
     public String showDetailsOfTodayOrderList(@RequestParam(value = "dayBefore", required = false) Integer dayBeforeCount,
                                               @RequestParam(value = "dayAfter", required = false) Integer dayAfterCount,
                                               Model theModel) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat(
-                "MM/dd/yyyy", Locale.US);
         int dayRatio = (dayAfterCount != null && dayBeforeCount != null) ? dayAfterCount - dayBeforeCount : 0;
         if (dayRatio != 0) {
             Date day = parseLocal.apply(LocalDate.now().plusDays(dayRatio));
@@ -100,9 +98,6 @@ public class StatsController {
                                                      @RequestParam(value = "period", required = false, defaultValue = "month") String period,
                                                      Model theModel) throws ParseException {
         StatsPeriod periodStats = (period.equals("month")) ? monthStats : yearStats;
-
-        DateFormat dateFormat = new SimpleDateFormat(
-                "MM/dd/yyyy", Locale.US);
 
         int periodRatio = (periodBeforeCount != null && periodAfterCount != null) ? periodAfterCount - periodBeforeCount : 0;
         LocalDate now = LocalDate.now();
