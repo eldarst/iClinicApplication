@@ -10,10 +10,8 @@ import kg.iclinic.application.model.StatsPeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,35 +34,17 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     @Override
     public DailyStats getStatistics(List<Order> orders, Date dateFrom, Date dateTo) {
         DailyStats stats = new DailyStats();
-        stats.setMaxOrder(orders.stream()
-                .mapToDouble(Order::getSum).max()
-                .orElse(0.));
+        stats.setMaxOrder(getMaxOrder(orders));
 
-        stats.setAverageOrder((int) orders.stream()
-                .mapToDouble(Order::getSum)
-                .average().orElse(0.));
+        stats.setAverageOrder((int) getAverageOrder(orders));
 
-        stats.setMostFrequentDoctor(orders.stream()
-                .map(Order::getDoctorName).filter(Objects::nonNull)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet().stream().max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey).orElse(""));
+        stats.setMostFrequentDoctor(getFrequentDoctor(orders));
 
-        stats.setMostFrequentDoctorCount(orders.stream().filter(o -> o.getDoctorName()
-                .equalsIgnoreCase(stats.getMostFrequentDoctor())).count());
+        stats.setMostFrequentDoctorCount(getMostFrequentDoctorCount(orders, stats));
 
-        stats.setMostFrequentProduct(orders.stream()
-                .flatMap(v -> v.getProductList().stream())
-                .collect(Collectors.toList()).stream()
-                .map(Product::getName).filter(Objects::nonNull)
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet().stream().max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey).orElse(""));
+        stats.setMostFrequentProduct(getMostFrequentProduct(orders));
 
-        stats.setMostFrequentProductCount(orders.stream()
-                .flatMap(v -> v.getProductList().stream())
-                .collect(Collectors.toList()).stream()
-                .filter(o -> o.getName().equalsIgnoreCase(stats.getMostFrequentProduct())).count());
+        stats.setMostFrequentProductCount(getMostFrequentProductCount(orders, stats));
 
         CountStats(stats, orders);
 
@@ -74,6 +54,47 @@ public class DailyStatsServiceImpl implements DailyStatsService{
         return stats;
     }
 
+    private long getMostFrequentProductCount(List<Order> orders, DailyStats stats) {
+        return orders.stream()
+                .flatMap(v -> v.getProductList().stream())
+                .collect(Collectors.toList()).stream()
+                .filter(o -> o.getName().equalsIgnoreCase(stats.getMostFrequentProduct())).count();
+    }
+
+    private String getMostFrequentProduct(List<Order> orders) {
+        return orders.stream()
+                .flatMap(v -> v.getProductList().stream())
+                .collect(Collectors.toList()).stream()
+                .map(Product::getName).filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream().max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElse("");
+    }
+
+    private long getMostFrequentDoctorCount(List<Order> orders, DailyStats stats) {
+        return orders.stream().filter(o -> o.getDoctorName()
+                .equalsIgnoreCase(stats.getMostFrequentDoctor())).count();
+    }
+
+    private String getFrequentDoctor(List<Order> orders) {
+        return orders.stream()
+                .map(Order::getDoctorName).filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream().max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElse("");
+    }
+
+    private double getAverageOrder(List<Order> orders) {
+        return orders.stream()
+                .mapToDouble(Order::getSum)
+                .average().orElse(0.);
+    }
+
+    private double getMaxOrder(List<Order> orders) {
+        return orders.stream()
+                .mapToDouble(Order::getSum).max()
+                .orElse(0.);
+    }
 
 
     private void CountStats(DailyStats stats, List<Order> orders) {

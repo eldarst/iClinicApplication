@@ -12,6 +12,7 @@ import java.util.function.Function;
 public class StatsPeriod {
     private Function<LocalDate, LocalDate> firstDayOfAllPeriod;
 
+
     private Function<LocalDate, LocalDate> endOfSubPeriod;
 
     private Function<LocalDate, LocalDate> subPeriodIncrementing;
@@ -20,9 +21,18 @@ public class StatsPeriod {
 
     private Function<LocalDate, Integer> SubPeriodCount;
 
+    private Function<LocalDate, String> mainPeriodTitleValue;
+
     private int period;
 
-    ArrayList<String> periodNames;
+    private ArrayList<String> periodNames;
 
-    ArrayList<String> subPeriodNames;
+    private ArrayList<String> subPeriodNames;
+
+    private String mainPeriodTitle;
+
+    private String periodTitle;
+
+    private String subPeriodTitle;
+
 }

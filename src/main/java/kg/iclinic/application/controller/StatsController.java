@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Function;
@@ -41,7 +41,7 @@ public class StatsController {
 
     private static Function<LocalDate, Date> parseLocal = java.sql.Date::valueOf;
 
-    private static StatsPeriod monthStats = new StatsPeriod((lastDay) -> lastDay.withDayOfMonth(1),
+    private static StatsPeriod monthStats = new StatsPeriod((month) -> month.withDayOfMonth(1),
             (periodStart) -> periodStart.with(nextOrSame(SUNDAY)),
             (period) -> period.plusDays(1),
             (date) -> {
@@ -49,9 +49,13 @@ public class StatsController {
                 return date.get(weekFields.weekOfMonth());
             },
             (date) -> date.getDayOfWeek().getValue(),
+            (date) -> date.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("ru")),
             0,
-            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5")),
-            new ArrayList<>(Arrays.asList("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье")) );
+            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5", "Неделя 6")),
+            new ArrayList<>(Arrays.asList("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье")),
+            "Месяц" ,
+             "Неделя",
+             "День недели");
 
     private static StatsPeriod yearStats = new StatsPeriod((lastDay) -> lastDay.withDayOfYear(1),
             (periodStart) -> periodStart.withDayOfMonth(periodStart.lengthOfMonth()),
@@ -61,9 +65,13 @@ public class StatsController {
                 WeekFields weekFields = WeekFields.of(Locale.getDefault());
                 return date.get(weekFields.weekOfMonth());
             },
+            (date) -> date.getYear() + "-год",
             6,
             new ArrayList<>(Arrays.asList("Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь")),
-            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5")));
+            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5", "Неделя 6")),
+            "Год",
+            "Месяц",
+            "Неделя");
 
     @GetMapping("/showDetailsOfOrderList")
     public String showDetailsOfTodayOrderList(@RequestParam(value = "dayBefore", required = false) Integer dayBeforeCount,
@@ -87,25 +95,35 @@ public class StatsController {
     }
 
     @GetMapping("/showDetailsOfOrderListMonthly")
-    public String showDetailsOfTodayOrderListMonthly(@RequestParam(value = "monthBefore", required = false) Integer monthBeforeCount,
-                                                     @RequestParam(value = "monthAfter", required = false) Integer monthAfterCount,
+    public String showDetailsOfTodayOrderListMonthly(@RequestParam(value = "periodBefore", required = false) Integer periodBeforeCount,
+                                                     @RequestParam(value = "periodAfter", required = false) Integer periodAfterCount,
+                                                     @RequestParam(value = "period", required = false, defaultValue = "month") String period,
                                                      Model theModel) throws ParseException {
+        StatsPeriod periodStats = (period.equals("month")) ? monthStats : yearStats;
+
         DateFormat dateFormat = new SimpleDateFormat(
                 "MM/dd/yyyy", Locale.US);
-        int dayRatio = (monthBeforeCount != null && monthAfterCount != null) ? monthAfterCount - monthBeforeCount : 0;
-        LocalDate lastDay = (dayRatio != 0)
-                ? LocalDate.now().plusMonths(dayRatio)
-                .withDayOfMonth(LocalDate.now().plusMonths(dayRatio).lengthOfMonth())
-                : LocalDate.now();
-        Date lastDayOfMonth = parseLocal.apply(lastDay);
-        Date firstDayOfMonth = parseLocal.apply(lastDay.withDayOfMonth(1));
 
-        theModel.addAttribute("stats", dailyStatsService.getPeriodStats(lastDayOfMonth, monthStats));
-        theModel.addAttribute("lastDay", lastDayOfMonth);
-        theModel.addAttribute("firstDay", firstDayOfMonth);
-        theModel.addAttribute("monthStats", dailyStatsService.getStatsByDate(firstDayOfMonth, lastDayOfMonth));
-        theModel.addAttribute("monthBefore", (monthBeforeCount != null) ? monthBeforeCount : 0);
-        theModel.addAttribute("monthAfter", (monthAfterCount != null) ? monthAfterCount : 0);
+        int periodRatio = (periodBeforeCount != null && periodAfterCount != null) ? periodAfterCount - periodBeforeCount : 0;
+        LocalDate now = LocalDate.now();
+        LocalDate lastDay = (periodRatio != 0)
+                ? (period.equals("month"))
+                    ? now.plusMonths(periodRatio)
+                    .withDayOfMonth(now.plusMonths(periodRatio).lengthOfMonth())
+                    : LocalDate.now().plusYears(periodRatio).withDayOfYear(now.plusYears(periodRatio).lengthOfYear())
+                : now;
+        Date lastDayOfPeriod = parseLocal.apply(lastDay);
+        Date firstDayOfPeriod = parseLocal.apply(periodStats.getFirstDayOfAllPeriod().apply(lastDay));
+
+        theModel.addAttribute("period", period);
+        theModel.addAttribute("periodTitles", Arrays.asList(periodStats.getMainPeriodTitle(), periodStats.getPeriodTitle(), periodStats.getSubPeriodTitle()));
+        theModel.addAttribute("periodName", periodStats.getMainPeriodTitleValue().apply(lastDay));
+        theModel.addAttribute("stats", dailyStatsService.getPeriodStats(lastDayOfPeriod, periodStats));
+        theModel.addAttribute("lastDay", lastDayOfPeriod);
+        theModel.addAttribute("firstDay", firstDayOfPeriod);
+        theModel.addAttribute("periodStats", dailyStatsService.getStatsByDate(firstDayOfPeriod, lastDayOfPeriod));
+        theModel.addAttribute("periodBefore", (periodBeforeCount != null) ? periodBeforeCount : 0);
+        theModel.addAttribute("periodAfter", (periodAfterCount != null) ? periodAfterCount : 0);
         return "weekly-monthly-stats";
     }
 
@@ -149,7 +167,6 @@ public class StatsController {
         LocalDate today = LocalDate.now();
 
         LocalDate monday = today.with(previousOrSame(MONDAY));
-        //LocalDate sunday = today.with(nextOrSame(SUNDAY));
         return parseLocal.apply(monday);
     }
 
