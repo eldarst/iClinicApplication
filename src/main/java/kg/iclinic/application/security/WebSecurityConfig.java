@@ -6,10 +6,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
+//@EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
@@ -22,6 +25,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
+        User.UserBuilder users = User.withDefaultPasswordEncoder();
+
+        auth.inMemoryAuthentication()
+                .withUser(users.username("eldar").password("test123").roles("MANAGER"));
         // Setting Service to find User in the database.
         // And Setting PassswordEncoder
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
@@ -35,11 +42,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Requires login with role ROLE_EMPLOYEE or ROLE_MANAGER.
         // If not, it will redirect to /admin/login.
-        http.authorizeRequests().antMatchers("/admin/orderList", "/admin/order", "/admin/accountInfo")//
+        http.authorizeRequests().antMatchers("/uzi/listTodayOrders", "/uzi/savePatient", "/uzi/deleteOrder", "/uzi/showFormForEditPatient",
+                "/uzi/showFormForAddProduct", "/uzi/addProduct", "/uzi/listProducts", "/uzi/deleteProduct", "/uzi/showFormForEditProduct")//
                 .access("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER')");
 
         // Pages only for MANAGER
-        http.authorizeRequests().antMatchers("/admin/product").access("hasRole('ROLE_MANAGER')");
+        http.authorizeRequests().antMatchers("/uzi/listOrderBetweenDates", "/uzi/showSortByDateForm", "/uzi/savePatient", "/uzi/savePatient",
+                "/uzi/showDetailsOfOrderList", "/uzi/showDetailsOfOrderListMonthly", "/uzi/showSalariesBetweenDatesForm", "/uzi/listSalariesBetweenDates",
+                "/uzi/listCurrentWeekSalary")
+                .access("hasRole('ROLE_MANAGER')");
 
         // When user login, role XX.
         // But access to the page requires the YY role,
@@ -47,19 +58,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().and().exceptionHandling().accessDeniedPage("/403");
 
         // Configuration for Login Form.
-        http.authorizeRequests().and().formLogin()//
-
-                //
-                .loginProcessingUrl("/j_spring_security_check") // Submit URL
-                .loginPage("/admin/login")//
-                .defaultSuccessUrl("/admin/accountInfo")//
-                .failureUrl("/admin/login?error=true")//
-                .usernameParameter("userName")//
-                .passwordParameter("password")
-
-                // Configuration for the Logout page.
-                // (After logout, go to home page)
-                .and().logout().logoutUrl("/admin/logout").logoutSuccessUrl("/");
+        http.authorizeRequests().and()
+                .formLogin()
+                .loginPage("/showMyLoginPage")
+                .defaultSuccessUrl("/uzi/listTodayOrders")
+                .loginProcessingUrl("/authenticateTheUser")
+                .permitAll()
+                .and()
+                .logout().permitAll()
+                .and()
+                .exceptionHandling().accessDeniedPage("/access-denied");
 
     }
 }

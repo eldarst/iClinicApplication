@@ -42,6 +42,7 @@ public class Product implements Serializable {
             joinColumns = @JoinColumn(name = "PRODUCT_ID"),
             inverseJoinColumns = @JoinColumn(name = "ORDER_ID"))
     private List<Order> ordersList;
+
     @Override
     public String toString() {
         return name + " ," + price + "с";

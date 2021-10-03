@@ -1,6 +1,9 @@
 package kg.iclinic.application.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -8,7 +11,9 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "Accounts")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class Account implements Serializable {
     public static final String ROLE_MANAGER = "MANAGER";
     public static final String ROLE_EMPLOYEE = "EMPLOYEE";

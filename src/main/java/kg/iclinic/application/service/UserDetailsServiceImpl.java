@@ -16,15 +16,16 @@ import java.util.List;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
+
     @Autowired
     private AccountRepository accountDAO;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = accountDAO.getById(username);
-        System.out.println("Account= " + account);
+        Account account = accountDAO.findByUserName(username);
+//        System.out.println("Account= " + account);
 
-        if (account == null) {
+        if (account.getUserRole() == null) {
             throw new UsernameNotFoundException("User " //
                     + username + " was not found in the database");
         }
