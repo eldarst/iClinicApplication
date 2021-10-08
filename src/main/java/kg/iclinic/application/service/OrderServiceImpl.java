@@ -56,12 +56,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public double countSalary(List<Order> ordersOfDoctor) {
-        double result = 0;
-        for(Order order: ordersOfDoctor) {
-            result += order.getSum();
-        }
-        return result;
+        return ordersOfDoctor.stream()
+                .mapToDouble(Order::getSum)
+                .sum();
     }
-
-
 }

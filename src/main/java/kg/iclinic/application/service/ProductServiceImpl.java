@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -34,11 +35,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getProductList(List<String> codes) {
-        List<Product> productList = new ArrayList<>();
-        for(String code: codes) {
-            productList.add(findProduct(Long.parseLong(code)));
-        }
-        return productList;
+        return codes.stream()
+                .mapToLong(Long::parseLong)
+                .mapToObj(this::findProduct)
+                .collect(Collectors.toList());
     }
 
     @Override

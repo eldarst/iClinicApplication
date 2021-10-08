@@ -56,6 +56,7 @@ public class DailyStatsServiceImpl implements DailyStatsService{
 
     private long getMostFrequentProductCount(List<Order> orders, DailyStats stats) {
         return orders.stream()
+                .parallel()
                 .flatMap(v -> v.getProductList().stream())
                 .collect(Collectors.toList()).stream()
                 .filter(o -> o.getName().equalsIgnoreCase(stats.getMostFrequentProduct())).count();
@@ -63,17 +64,20 @@ public class DailyStatsServiceImpl implements DailyStatsService{
 
     private String getMostFrequentProduct(List<Order> orders) {
         return orders.stream()
+                .parallel()
                 .flatMap(v -> v.getProductList().stream())
-                .collect(Collectors.toList()).stream()
                 .map(Product::getName).filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet().stream().max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey).orElse("");
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("");
     }
 
     private long getMostFrequentDoctorCount(List<Order> orders, DailyStats stats) {
-        return orders.stream().filter(o -> o.getDoctorName()
-                .equalsIgnoreCase(stats.getMostFrequentDoctor())).count();
+        return orders.stream()
+                .filter(o -> o.getDoctorName().equalsIgnoreCase(stats.getMostFrequentDoctor()))
+                .count();
     }
 
     private String getFrequentDoctor(List<Order> orders) {
@@ -87,12 +91,14 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     private double getAverageOrder(List<Order> orders) {
         return orders.stream()
                 .mapToDouble(Order::getSum)
-                .average().orElse(0.);
+                .average()
+                .orElse(0.);
     }
 
     private double getMaxOrder(List<Order> orders) {
         return orders.stream()
-                .mapToDouble(Order::getSum).max()
+                .mapToDouble(Order::getSum)
+                .max()
                 .orElse(0.);
     }
 
