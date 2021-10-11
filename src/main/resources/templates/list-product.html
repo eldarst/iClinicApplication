@@ -6,12 +6,52 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.0.2/css/bootstrap.min.css} "/>
-<!--    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.0.2/css/bootstrap-theme.min.css} "/>-->
-<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>-->
-<!--    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>-->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
+    <link th:href="@{/webjars//font-awesome/css/all.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
 </head>
 <body>
+<nav class="navbar navbar-dark navbar-expand-sm fixed-top">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand mr-auto" th:href="@{/uzi/listTodayOrders}"><img th:src="@{/img/logo.png}" height="40" width="80"></a>
+        <div class="collapse navbar-collapse" id="Navbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUzi" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="fa fa-laptop fa-lg"></span> УЗИ</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownUzi">
+                        <a class="dropdown-item" th:href="@{/uzi/listTodayOrders}">Записи УЗИ</a>
+                        <a class="dropdown-item" href="#">Список услуг УЗИ</a>
+                    </div>
+                </li>
+
+                <li class="nav-item"><a class="nav-link" href="#">
+                    <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-users fa-lg"></span>
+                    Консультация</a></li>
+                <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="fa fa-calculator fa-lg"></span> Статистика</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" th:href="@{/uzi/listCurrentWeekSalary}">Недельная зарплата врачей</a>
+                        <a class="dropdown-item" th:href="@{/uzi/showSalariesBetweenDatesForm}">Зарплата врачей по датам</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" th:href="@{/uzi/showDetailsOfOrderList}">Статистика по дням</a>
+                        <a class="dropdown-item" th:href="@{/uzi/showDetailsOfOrderListMonthly}">Статистика по периодам</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" th:href="@{/uzi/showSortByDateForm}">Записи узи по датам</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<br>
+
 <div class="container">
     <h1>List of Patients</h1>
     <hr>
@@ -52,10 +92,10 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">
                         Add Patient
                     </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
                     <form id="reused_form" role="form" action="#" th:action="@{/uzi/addProduct}"
@@ -81,9 +121,14 @@
         </div>
     </div>
 </div>
-
-
-
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('dropdown-toggle').dropdown()
+});
+</script>
 <script>
 $(function()
 {
