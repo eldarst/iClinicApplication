@@ -5,7 +5,6 @@ import kg.iclinic.application.dao.DailyStatsRepository;
 import kg.iclinic.application.entity.DailyStats;
 import kg.iclinic.application.entity.Order;
 import kg.iclinic.application.entity.Product;
-import kg.iclinic.application.model.Methods;
 import kg.iclinic.application.model.StatsPeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     Function<LocalDate, Date> parseLocal = java.sql.Date::valueOf;
 
     @Override
-    public DailyStats getStatistics(List<Order> orders, Date dateFrom, Date dateTo) {
+    public DailyStats GetStatistics(List<Order> orders, Date dateFrom, Date dateTo) {
         DailyStats stats = new DailyStats();
         stats.setMaxOrder(getMaxOrder(orders));
 
@@ -54,17 +53,15 @@ public class DailyStatsServiceImpl implements DailyStatsService{
         return stats;
     }
 
-    private long getMostFrequentProductCount(List<Order> orders, DailyStats stats) {
+    private static long getMostFrequentProductCount(List<Order> orders, DailyStats stats) {
         return orders.stream()
-                .parallel()
                 .flatMap(v -> v.getProductList().stream())
                 .collect(Collectors.toList()).stream()
                 .filter(o -> o.getName().equalsIgnoreCase(stats.getMostFrequentProduct())).count();
     }
 
-    private String getMostFrequentProduct(List<Order> orders) {
+    private static String getMostFrequentProduct(List<Order> orders) {
         return orders.stream()
-                .parallel()
                 .flatMap(v -> v.getProductList().stream())
                 .map(Product::getName).filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
@@ -74,13 +71,13 @@ public class DailyStatsServiceImpl implements DailyStatsService{
                 .orElse("");
     }
 
-    private long getMostFrequentDoctorCount(List<Order> orders, DailyStats stats) {
+    private static long getMostFrequentDoctorCount(List<Order> orders, DailyStats stats) {
         return orders.stream()
                 .filter(o -> o.getDoctorName().equalsIgnoreCase(stats.getMostFrequentDoctor()))
                 .count();
     }
 
-    private String getFrequentDoctor(List<Order> orders) {
+    private static String getFrequentDoctor(List<Order> orders) {
         return orders.stream()
                 .map(Order::getDoctorName).filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
@@ -88,14 +85,14 @@ public class DailyStatsServiceImpl implements DailyStatsService{
                 .map(Map.Entry::getKey).orElse("");
     }
 
-    private double getAverageOrder(List<Order> orders) {
+    private static double getAverageOrder(List<Order> orders) {
         return orders.stream()
                 .mapToDouble(Order::getSum)
                 .average()
                 .orElse(0.);
     }
 
-    private double getMaxOrder(List<Order> orders) {
+    private static double getMaxOrder(List<Order> orders) {
         return orders.stream()
                 .mapToDouble(Order::getSum)
                 .max()
@@ -103,7 +100,7 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     }
 
 
-    private void CountStats(DailyStats stats, List<Order> orders) {
+    private static void CountStats(DailyStats stats, List<Order> orders) {
         int uziSum = 0, patientCount = 0, patientsUnknownDocCount = 0;
         double totalSum = 0., unknownPatientsSum = 0.;
         for(Order order: orders) {
@@ -130,22 +127,25 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     public DailyStats getStatsByDate(Date dateFrom, Date dateTo) {
         DailyStats stats = dailyStatsRepository.findByDateFromAndDateTo(dateFrom, dateTo);
         Date today = new Date();
-        if (stats != null && stats.getTotalSum() > 0) {
-            return stats;
-        } else if( stats != null && stats.getTotalSum() == 0) {
+        if(dateTo.before(dateFrom)) return new DailyStats();
+        if( stats != null && stats.getTotalSum() == 0) {
             dailyStatsRepository.delete(stats);
-            List<Order> orders = orderService.getSortedOrders(dateFrom, dateTo,"");
-            DailyStats statistics = getStatistics(orders, dateFrom, dateTo);
-            dailyStatsRepository.save(statistics);
+            DailyStats statistics = getStats(dateFrom, dateTo);
             return statistics;
-        }
-        else if(stats == null && today.after(dateFrom)){
-            List<Order> orders = orderService.getSortedOrders(dateFrom, dateTo,"");
-            DailyStats statistics = getStatistics(orders, dateFrom, dateTo);
-            dailyStatsRepository.save(statistics);
+        } else if (stats != null && stats.getTotalSum() > 0) {
+            return stats;
+        } else if(stats == null && today.after(dateFrom)){
+            DailyStats statistics = getStats(dateFrom, dateTo);
             return statistics;
         }
         return new DailyStats();
+    }
+
+    private DailyStats getStats(Date dateFrom, Date dateTo) {
+        List<Order> orders = orderService.getSortedOrders(dateFrom, dateTo, "");
+        DailyStats statistics = GetStatistics(orders, dateFrom, dateTo);
+        dailyStatsRepository.save(statistics);
+        return statistics;
     }
 
     @Override
@@ -157,39 +157,52 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     }
 
     private void FillStats(LinkedHashMap<Pair<String,DailyStats>, LinkedHashMap<String, DailyStats>> stats, LocalDate lastDay, StatsPeriod periodFunctions) {
+        Refresh();
         LocalDate firstDayOfPeriod = periodFunctions.getFirstDayOfAllPeriod().apply(lastDay);
 
-        int i = 0;
         for(LocalDate day = firstDayOfPeriod; day.isBefore(lastDay);) {
-            int periodCount = periodFunctions.getPeriodCount().apply(day) - 1;
-            String periodName = periodFunctions.getPeriodNames().get(periodCount);
-            LocalDate periodEnd = periodFunctions.getEndOfSubPeriod().apply(day);
-            if(periodEnd.isBefore(lastDay)) {
-                LinkedHashMap<String, DailyStats> detailStats = (LinkedHashMap<String, DailyStats>) GetPeriodStats(day, periodEnd, periodFunctions);
-                stats.put(new Pair<>(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(periodEnd))),
-                        detailStats);
-                day = periodEnd.plusDays(1);
-            } else {
-                LinkedHashMap<String, DailyStats> detailStats = (LinkedHashMap<String, DailyStats>) GetPeriodStats(day, lastDay, periodFunctions);
-                stats.put(new Pair<>(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(lastDay))),
-                        detailStats);
-                day = lastDay;
-            }
+            day = FillPeriodStats(stats, lastDay, periodFunctions, day);
         }
+    }
+
+    private void Refresh() {
+        List<DailyStats> topStats = dailyStatsRepository.findFirst100ByOrderByDateTo();
+        topStats.forEach(stat -> dailyStatsRepository.delete(stat));
+    }
+
+    private LocalDate FillPeriodStats(LinkedHashMap<Pair<String, DailyStats>, LinkedHashMap<String, DailyStats>> stats, LocalDate lastDay, StatsPeriod periodFunctions, LocalDate day) {
+        int periodCount = periodFunctions.getPeriodCount().apply(day) - 1;
+        String periodName = periodFunctions.getPeriodNames().get(periodCount);
+        LocalDate periodEnd = periodFunctions.getEndOfSubPeriod().apply(day);
+        if(periodEnd.isBefore(lastDay)) {
+            LinkedHashMap<String, DailyStats> detailStats = (LinkedHashMap<String, DailyStats>) GetPeriodStats(day, periodEnd, periodFunctions);
+            stats.put(new Pair<>(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(periodEnd))),
+                    detailStats);
+            day = periodEnd.plusDays(1);
+        } else {
+            LinkedHashMap<String, DailyStats> detailStats = (LinkedHashMap<String, DailyStats>) GetPeriodStats(day, lastDay, periodFunctions);
+            stats.put(new Pair<>(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(lastDay))),
+                    detailStats);
+            day = lastDay;
+        }
+        return day;
     }
 
     private Map<String, DailyStats> GetPeriodStats(LocalDate firstDay, LocalDate periodEnd, StatsPeriod periodFunctions) {
         Map<String, DailyStats> periodStats = new LinkedHashMap<>();
         LocalDate last = periodFunctions.getSubPeriodIncrementing().apply(periodEnd);
         for(LocalDate day = firstDay; day.isBefore(last); day = periodFunctions.getSubPeriodIncrementing().apply(day)) {
-            Date dateFrom = parseLocal.apply(day);
-            Date dateTo = parseLocal.apply(day.plusDays(periodFunctions.getPeriod()));
-            int subPeriodCount = periodFunctions.getSubPeriodCount().apply(day) - 1;
-            periodStats.put(periodFunctions.getSubPeriodNames()
-                            .get(subPeriodCount),
-                    getStatsByDate(dateFrom, dateTo));
+            FillSubPeriodStats(periodFunctions, periodStats, day);
         }
         return periodStats;
+    }
+
+    private void FillSubPeriodStats(StatsPeriod periodFunctions, Map<String, DailyStats> periodStats, LocalDate day) {
+        Date dateFrom = parseLocal.apply(day);
+        Date dateTo = parseLocal.apply(day.plusDays(periodFunctions.getSubPeriodLastDay().apply(day)));
+        int subPeriodCount = periodFunctions.getSubPeriodCount().apply(day) - 1;
+        periodStats.put(periodFunctions.getSubPeriodNames().get(subPeriodCount),
+                getStatsByDate(dateFrom, dateTo));
     }
 
     @Override

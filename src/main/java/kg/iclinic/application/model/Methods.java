@@ -16,7 +16,6 @@ public class Methods {
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
         Date today = new Date();
-
         try {
             return formatter.parse(formatter.format(today));
         } catch (ParseException e) {

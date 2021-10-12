@@ -9,7 +9,7 @@ import java.text.ParseException;
 import java.util.*;
 
 public interface DailyStatsService {
-    DailyStats getStatistics(List<Order> orders, Date dateFrom, Date dateTo);
+    DailyStats GetStatistics(List<Order> orders, Date dateFrom, Date dateTo);
 
     DailyStats getStatsByDate(Date dateFrom, Date dateTo) throws ParseException;
 

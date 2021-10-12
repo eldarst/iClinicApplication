@@ -23,7 +23,7 @@ public class StatsPeriod {
 
     private Function<LocalDate, String> mainPeriodTitleValue;
 
-    private int period;
+    private Function<LocalDate, Integer> subPeriodLastDay;
 
     private ArrayList<String> periodNames;
 

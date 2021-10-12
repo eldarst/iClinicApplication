@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .access("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER')");
 
         // Pages only for MANAGER
-        http.authorizeRequests().antMatchers("/uzi/listOrderBetweenDates", "/uzi/showSortByDateForm", "/uzi/savePatient", "/uzi/savePatient",
+        http.authorizeRequests().antMatchers("/uzi/listOrderBetweenDates", "/uzi/showSortByDateForm",
                 "/uzi/showDetailsOfOrderList", "/uzi/showDetailsOfOrderListMonthly", "/uzi/showSalariesBetweenDatesForm", "/uzi/listSalariesBetweenDates",
                 "/uzi/listCurrentWeekSalary")
                 .access("hasRole('ROLE_MANAGER')");

@@ -50,7 +50,7 @@ public class StatsController {
             },
             (date) -> date.getDayOfWeek().getValue(),
             (date) -> date.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("ru")),
-            0,
+            (date) -> 0,
             new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5", "Неделя 6")),
             new ArrayList<>(Arrays.asList("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье")),
             "Месяц" ,
@@ -59,14 +59,17 @@ public class StatsController {
 
     private static final StatsPeriod yearStats = new StatsPeriod((lastDay) -> lastDay.withDayOfYear(1),
             (periodStart) -> periodStart.withDayOfMonth(periodStart.lengthOfMonth()),
-            (period) -> period.plusWeeks(1),
+            (period) -> period.plusWeeks(1).with(previousOrSame(MONDAY)),
             LocalDate::getMonthValue,
             (date) -> {
                 WeekFields weekFields = WeekFields.of(Locale.getDefault());
                 return date.get(weekFields.weekOfMonth());
             },
             (date) -> date.getYear() + "-год",
-            6,
+            (date) -> {
+                int ratio = date.with(nextOrSame(SUNDAY)).getDayOfMonth() - date.getDayOfMonth();
+                return ratio >= 0 ? ratio : date.withDayOfYear(date.lengthOfMonth()).getDayOfMonth() - date.getDayOfMonth();
+            },
             new ArrayList<>(Arrays.asList("Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь")),
             new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5", "Неделя 6")),
             "Год",
@@ -84,7 +87,7 @@ public class StatsController {
             theModel.addAttribute("day", day);
         } else {
             Date day = parseLocal.apply(LocalDate.now());
-            theModel.addAttribute("stats", dailyStatsService.getStatistics(orderService.getTodayOrders(), day, day));
+            theModel.addAttribute("stats", dailyStatsService.GetStatistics(orderService.getTodayOrders(), day, day));
             theModel.addAttribute("day", new Date());
         }
         theModel.addAttribute("dayBefore", (dayBeforeCount != null) ? dayBeforeCount : 0);
