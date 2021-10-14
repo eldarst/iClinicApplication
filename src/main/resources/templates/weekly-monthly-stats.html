@@ -96,7 +96,7 @@
                             <td th:text="${periodStats.averageOrder}"/>
                             <td th:text="${periodStats.mostFrequentDoctor}"/>
                             <td th:text="${periodStats.mostFrequentProduct}"/>
-                            <td class="show-details"><i class="glyphicon glyphicon-plus"></i></td>
+                            <td class="show-details"><i class="fas fa-angle-down"></i></td>
                         </tr>
                         <tr class="hideRow">
                             <td colspan="11">
@@ -128,7 +128,7 @@
                                             <td th:text="${currentPeriodStat.key.value.averageOrder}"/>
                                             <td th:text="${currentPeriodStat.key.value.mostFrequentDoctor}"/>
                                             <td th:text="${currentPeriodStat.key.value.mostFrequentProduct}"/>
-                                            <td class="show-details"><i class="glyphicon glyphicon-plus"></i></td>
+                                            <td class="show-details"><i class="fas fa-angle-down"></i></td>
                                         </tr>
                                         <tr class="hideRow">
                                             <td colspan="11">
@@ -214,11 +214,11 @@ $(function() {
       if (!$(this).hasClass('panel-collapsed')) {
         $(this).parent('tr').next().fadeIn(700);
         $(this).addClass('panel-collapsed');
-        $(this).find('i').removeClass('glyphicon-plus').addClass('glyphicon-minus');
+        $(this).find('i').removeClass('fa-angle-down').addClass('fa-angle-up');
       } else {
         $(this).parent('tr').next().fadeOut(700);
         $(this).removeClass('panel-collapsed');
-        $(this).find('i').removeClass('glyphicon-minus').addClass('glyphicon-plus');
+        $(this).find('i').removeClass('fa-angle-up').addClass('fa-angle-down');
       }
     }
   );
@@ -232,7 +232,7 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
-    var value = "[[${period}]]" : "month";
+    var value = "[[${period}]]";
     var monthButton = document.getElementById("monthStats");
     var yearButton = document.getElementById("yearStats");
 

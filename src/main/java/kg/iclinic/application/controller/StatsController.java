@@ -23,8 +23,7 @@ import java.util.function.Function;
 
 import static java.time.DayOfWeek.MONDAY;
 import static java.time.DayOfWeek.SUNDAY;
-import static java.time.temporal.TemporalAdjusters.nextOrSame;
-import static java.time.temporal.TemporalAdjusters.previousOrSame;
+import static java.time.temporal.TemporalAdjusters.*;
 
 @Controller
 @RequestMapping("/uzi")
@@ -42,7 +41,10 @@ public class StatsController {
     private static final Function<LocalDate, Date> parseLocal = java.sql.Date::valueOf;
 
     private static final  StatsPeriod monthStats = new StatsPeriod((month) -> month.withDayOfMonth(1),
-            (periodStart) -> periodStart.with(nextOrSame(SUNDAY)),
+            (periodStart) -> {
+                LocalDate nextSunday = periodStart.with(nextOrSame(SUNDAY));
+                return nextSunday.isAfter(periodStart) ? nextSunday : nextSunday.withDayOfMonth(nextSunday.lengthOfMonth());
+            },
             (period) -> period.plusDays(1),
             (date) -> {
                 WeekFields weekFields = WeekFields.of(Locale.getDefault());
@@ -59,7 +61,10 @@ public class StatsController {
 
     private static final StatsPeriod yearStats = new StatsPeriod((lastDay) -> lastDay.withDayOfYear(1),
             (periodStart) -> periodStart.withDayOfMonth(periodStart.lengthOfMonth()),
-            (period) -> period.plusWeeks(1).with(previousOrSame(MONDAY)),
+            (period) -> {
+                LocalDate nextMonday = period.plusWeeks(1).with(previousOrSame(MONDAY));
+                return nextMonday.isAfter(period) ? nextMonday : nextMonday.withDayOfMonth(nextMonday.lengthOfMonth());
+            },
             LocalDate::getMonthValue,
             (date) -> {
                 WeekFields weekFields = WeekFields.of(Locale.getDefault());
