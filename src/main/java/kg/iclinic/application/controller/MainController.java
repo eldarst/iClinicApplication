@@ -20,9 +20,6 @@ public class MainController {
             "MM/dd/yyyy", Locale.US);
 
     @Autowired
-    AccountService accountService;
-
-    @Autowired
     OrderService orderService;
 
     @Autowired

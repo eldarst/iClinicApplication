@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Details of List</title>
+    <title>Итоги УЗИ</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -54,7 +54,7 @@
 
 <br>
 <div class="container" th:object="${stats}">
-    <h1>Детали обеследований
+    <h1>Итоги УЗИ
         <br>
         <label th:text="${#calendars.format(day, 'dd MMM yyyy')}"/>
     </h1>
@@ -90,10 +90,10 @@
         <label>Самое большое количество направлений(Продукт): </label><label th:text="*{mostFrequentProduct}"/> <label> в количестве: </label><label th:text="*{mostFrequentProductCount}"/>
     </div>
 
-    <a th:href="@{/uzi/showDetailsOfOrderList(dayBefore=${dayBefore}+1, dayAfter=${dayAfter})}"
+    <a th:href="@{/uzi/showDetailsOfOrderList(daysAdd=${daysAdd}-1)}"
        class="btn btn-info btn-sm">Прошлый день</a>
 
-    <a th:href="@{/uzi/showDetailsOfOrderList(dayBefore=${dayBefore},dayAfter=${dayAfter}+1)}"
+    <a th:href="@{/uzi/showDetailsOfOrderList(daysAdd=${daysAdd}+1)}"
        class="btn btn-info btn-sm">Следующий день</a>
 </div>
 

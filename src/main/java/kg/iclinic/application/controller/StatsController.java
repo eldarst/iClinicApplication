@@ -7,10 +7,13 @@ import kg.iclinic.application.model.StatsPeriod;
 import kg.iclinic.application.service.DailyStatsService;
 import kg.iclinic.application.service.DoctorService;
 import kg.iclinic.application.service.OrderService;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -23,7 +26,8 @@ import java.util.function.Function;
 
 import static java.time.DayOfWeek.MONDAY;
 import static java.time.DayOfWeek.SUNDAY;
-import static java.time.temporal.TemporalAdjusters.*;
+import static java.time.temporal.TemporalAdjusters.nextOrSame;
+import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 @Controller
 @RequestMapping("/uzi")
@@ -82,51 +86,38 @@ public class StatsController {
             "Неделя");
 
     @GetMapping("/showDetailsOfOrderList")
-    public String showDetailsOfTodayOrderList(@RequestParam(value = "dayBefore", required = false) Integer dayBeforeCount,
-                                              @RequestParam(value = "dayAfter", required = false) Integer dayAfterCount,
+    public String showDetailsOfTodayOrderList(@RequestParam(value = "daysAdd", required = false) Integer daysAdd,
                                               Model theModel) throws ParseException {
-        int dayRatio = (dayAfterCount != null && dayBeforeCount != null) ? dayAfterCount - dayBeforeCount : 0;
-        if (dayRatio != 0) {
-            Date day = parseLocal.apply(LocalDate.now().plusDays(dayRatio));
-            theModel.addAttribute("stats", dailyStatsService.getStatsByDate(day, day));
-            theModel.addAttribute("day", day);
-        } else {
-            Date day = parseLocal.apply(LocalDate.now());
-            theModel.addAttribute("stats", dailyStatsService.GetStatistics(orderService.getTodayOrders(), day, day));
-            theModel.addAttribute("day", new Date());
-        }
-        theModel.addAttribute("dayBefore", (dayBeforeCount != null) ? dayBeforeCount : 0);
-        theModel.addAttribute("dayAfter", (dayAfterCount != null) ? dayAfterCount : 0);
+        int daysToAdd = (daysAdd != null) ? daysAdd : 0;
+        Date day = parseLocal.apply(LocalDate.now().plusDays(daysToAdd));
+
+        theModel.addAttribute("stats", dailyStatsService.getStatsByDate(day, day));
+        theModel.addAttribute("day", day);
+        theModel.addAttribute("daysAdd", daysToAdd);
         return "details-list";
     }
 
     @GetMapping("/showDetailsOfOrderListMonthly")
-    public String showDetailsOfTodayOrderListMonthly(@RequestParam(value = "periodBefore", required = false) Integer periodBeforeCount,
-                                                     @RequestParam(value = "periodAfter", required = false) Integer periodAfterCount,
+    public String showDetailsOfTodayOrderListMonthly(@RequestParam(value = "periodAdd", required = false) Integer periodAdd,
                                                      @RequestParam(value = "period", required = false, defaultValue = "month") String period,
                                                      Model theModel) throws ParseException {
         StatsPeriod periodStats = (period.equals("month")) ? monthStats : yearStats;
-
-        int periodRatio = (periodBeforeCount != null && periodAfterCount != null) ? periodAfterCount - periodBeforeCount : 0;
+        int periodAmountToAdd = (periodAdd != null) ? periodAdd : 0;
         LocalDate now = LocalDate.now();
-        LocalDate lastDay = (periodRatio != 0)
-                ? (period.equals("month"))
-                    ? now.plusMonths(periodRatio)
-                    .withDayOfMonth(now.plusMonths(periodRatio).lengthOfMonth())
-                    : LocalDate.now().plusYears(periodRatio).withDayOfYear(now.plusYears(periodRatio).lengthOfYear())
-                : now;
+        LocalDate lastDay = (period.equals("month"))
+                    ? now.plusMonths(periodAmountToAdd).withDayOfMonth(now.plusMonths(periodAmountToAdd).lengthOfMonth())
+                    : now.plusYears(periodAmountToAdd).withDayOfYear(now.plusYears(periodAmountToAdd).lengthOfYear());
         Date lastDayOfPeriod = parseLocal.apply(lastDay);
         Date firstDayOfPeriod = parseLocal.apply(periodStats.getFirstDayOfAllPeriod().apply(lastDay));
 
-        theModel.addAttribute("period", period);
         theModel.addAttribute("periodTitles", Arrays.asList(periodStats.getMainPeriodTitle(), periodStats.getPeriodTitle(), periodStats.getSubPeriodTitle()));
         theModel.addAttribute("periodName", periodStats.getMainPeriodTitleValue().apply(lastDay));
-        theModel.addAttribute("stats", dailyStatsService.getPeriodStats(lastDayOfPeriod, periodStats));
-        theModel.addAttribute("lastDay", lastDayOfPeriod);
         theModel.addAttribute("firstDay", firstDayOfPeriod);
-        theModel.addAttribute("periodStats", dailyStatsService.getStatsByDate(firstDayOfPeriod, lastDayOfPeriod));
-        theModel.addAttribute("periodBefore", (periodBeforeCount != null) ? periodBeforeCount : 0);
-        theModel.addAttribute("periodAfter", (periodAfterCount != null) ? periodAfterCount : 0);
+        theModel.addAttribute("lastDay", lastDayOfPeriod);
+        theModel.addAttribute("stats", dailyStatsService.getPeriodStats(lastDayOfPeriod, periodStats));
+        theModel.addAttribute("totalPeriodStats", dailyStatsService.getStatsByDate(firstDayOfPeriod, lastDayOfPeriod));
+        theModel.addAttribute("period", period);
+        theModel.addAttribute("periodAdd", periodAmountToAdd);
         return "weekly-monthly-stats";
     }
 
@@ -141,36 +132,33 @@ public class StatsController {
     public String getSalariesBetweenDates(@RequestParam(value = "dateFrom", required = false) String dateFrom,
                                           @RequestParam(value = "dateTo", required = false) String dateTo,
                                           Model theModel) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat(
-                "MM/dd/yyyy", Locale.US);
-        Date firstDate = new Date();
-        Date secondDate = new Date();
-        if (dateFrom.length() > 0 && dateTo.length() > 0) {
-            firstDate = dateFormat.parse(dateFrom);
-            secondDate = dateFormat.parse(dateTo);
-        }
-        HashMap<String, Pair<Double, Integer>> doctorsSalaries = GetMappedSalary(firstDate, secondDate);
-
-        theModel.addAttribute("theListOfDoctorsWithSalaries", doctorsSalaries);
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        Date firstDate = (dateFrom.length() > 0) ? dateFormat.parse(dateFrom) : new Date();
+        Date secondDate = (dateTo.length() > 0) ? dateFormat.parse(dateTo) : new Date();
+        theModel.addAttribute("theListOfDoctorsWithSalaries", GetMappedSalary(firstDate, secondDate));
         theModel.addAttribute("dateFrom", firstDate);
         theModel.addAttribute("dateTo", secondDate);
         return "salary-by-date";
     }
 
     @GetMapping("/listCurrentWeekSalary")
-    public String getCurrentWeekSalaries(Model theModel) {
-        Date firstDayOfWeek = GetFirstDayOfTheWeek();
-        System.out.println(firstDayOfWeek);
-        HashMap<String, Pair<Double, Integer>> doctorsSalaries = GetMappedSalary(firstDayOfWeek, new Date());
-        theModel.addAttribute("theListOfDoctorsWithSalaries", doctorsSalaries);
+    public String getCurrentWeekSalaries(@RequestParam(value = "weekAdd", required = false) Integer weekAdd,
+                                         Model theModel) {
+        int weeksAdded = weekAdd != null ? weekAdd : 0;
+        LocalDate firstDayOfWeek = GetFirstDayOfTheWeek().plusDays(weeksAdded * 7);
+        Date parsedFirstDay = parseLocal.apply(firstDayOfWeek);
+        Date parsedLastDay = parseLocal.apply(firstDayOfWeek.plusDays(6));
+
+
+        theModel.addAttribute("theListOfDoctorsWithSalaries", GetMappedSalary(parsedFirstDay, parsedLastDay));
+        theModel.addAttribute("weekStart", parsedFirstDay);
+        theModel.addAttribute("weekEnd", parsedLastDay);
+        theModel.addAttribute("weekAdd", weeksAdded);
         return "current-week-salary";
     }
 
-    private Date GetFirstDayOfTheWeek() {
-        LocalDate today = LocalDate.now();
-
-        LocalDate monday = today.with(previousOrSame(MONDAY));
-        return parseLocal.apply(monday);
+    private LocalDate GetFirstDayOfTheWeek() {
+        return LocalDate.now().with(previousOrSame(MONDAY));
     }
 
     private HashMap<String, Pair<Double, Integer>> GetMappedSalary(Date dateFrom, Date dateTo) {

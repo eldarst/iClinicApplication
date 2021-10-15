@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>List of Patients</title>
+    <title>Изменить запись</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
@@ -52,7 +52,7 @@
     <br>
 
     <div class="container">
-        <h1>Edit Patient</h1>
+        <h1>Изменить запись</h1>
         <hr>
         <form action="#" th:action="@{/uzi/savePatient}" th:object="${thePatient}" method="POST">
             <input type="hidden" th:field="*{id}"/>

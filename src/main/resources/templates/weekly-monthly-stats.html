@@ -57,17 +57,14 @@
             <label th:text="${#calendars.format(firstDay, 'dd MMM yyyy')}"/> -
             <label th:text="${#calendars.format(lastDay, 'dd MMM yyyy')}"/>
         </h1>
-
+        <hr>
         <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodBefore=0, periodAfter=0, period=month)}"
            class="btn btn-info btn-sm">Показать статистику по месяцам</a>
 
         <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodBefore=0, periodAfter=0, period=year)}"
            class="btn btn-info btn-sm">Показать статистику по годам</a>
-
     </div>
-
-    <hr>
-
+    <br>
     <div class="row">
         <div class="col-lg-12">
             <div class="provider-table member-portal-claim col-sm-offset-1">
@@ -87,15 +84,15 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:object="${periodStats}">
+                        <tr th:object="${totalPeriodStats}">
                             <td th:text="${periodName}"/>
-                            <td th:text="${periodStats.totalSum}"/>
-                            <td th:text="${periodStats.uziTotalSum}"/>
-                            <td th:text="${periodStats.totalPatients}"/>
-                            <td th:text="${periodStats.maxOrder}"/>
-                            <td th:text="${periodStats.averageOrder}"/>
-                            <td th:text="${periodStats.mostFrequentDoctor}"/>
-                            <td th:text="${periodStats.mostFrequentProduct}"/>
+                            <td th:text="${totalPeriodStats.totalSum}"/>
+                            <td th:text="${totalPeriodStats.uziTotalSum}"/>
+                            <td th:text="${totalPeriodStats.totalPatients}"/>
+                            <td th:text="${totalPeriodStats.maxOrder}"/>
+                            <td th:text="${totalPeriodStats.averageOrder}"/>
+                            <td th:text="${totalPeriodStats.mostFrequentDoctor}"/>
+                            <td th:text="${totalPeriodStats.mostFrequentProduct}"/>
                             <td class="show-details"><i class="fas fa-angle-down"></i></td>
                         </tr>
                         <tr class="hideRow">
@@ -182,11 +179,11 @@
 </div>
 <div class="col-md-12 d-flex justify-content-around">
     <div>
-        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodBefore=${periodBefore}+1, periodAfter=${periodAfter}, period=${period})}"
+        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodAdd=${periodAdd}-1, period=${period})}"
            class="btn btn-info btn-sm">Предыдущий</a>
     </div>
     <div>
-        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodBefore=${periodBefore},periodAfter=${periodAfter}+1, period=${period})}"
+        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodAdd=${periodAdd}+1, period=${period})}"
            class="btn btn-info btn-sm">Следующий</a>
     </div>
 </div>

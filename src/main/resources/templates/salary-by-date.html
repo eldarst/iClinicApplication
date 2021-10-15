@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Salaries</title>
+    <title>Зарплата по датам</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -55,7 +55,11 @@
 <br>
 
 <div class="container">
-    <h1>Salaries</h1>
+    <h1>Зарплата за
+        <br>
+        <label th:text="${#calendars.format(dateFrom, 'dd MMM yyyy')}"/> -
+        <label th:text="${#calendars.format(dateTo, 'dd MMM yyyy')}"/>
+    </h1>
     <hr>
     <form action="#" th:action="@{/uzi/listSalariesBetweenDates}">
         <div class='col-md-12 d-flex justify-content-around'>
@@ -78,11 +82,12 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class='col-3 md-4'>
-            <div class="form-group">
-                <br>
-                <button type="submit" class="btn btn-info col-md-3">Show</button>
+
+            <div class='col-4 md-4'>
+                <div class="form-group">
+                    <br>
+                    <button type="submit" class="btn btn-info">Show</button>
+                </div>
             </div>
         </div>
     </form>
