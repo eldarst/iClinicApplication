@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Изменить запись</title>
+    <title>Изменить данные врача</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
@@ -57,25 +57,24 @@
     <br>
 
     <div class="container">
-        <h1>Изменить запись</h1>
+        <h1>Изменить данные врача</h1>
         <hr>
-        <form action="#" th:action="@{/uzi/savePatient}" th:object="${thePatient}" method="POST">
+        <form id="reused_form" role="form" action="#" th:action="@{/cons/saveDoctor}"
+              th:object="${theDoctor}" method="POST">
             <input type="hidden" th:field="*{id}"/>
             <div class="form-group">
-                <label> Patient Name:</label>
-                <input placeholder="Patient Name" th:field="*{patientName}" type="text" class="form-control">
+                <label> Имя:</label>
+                <input placeholder="Имя" th:field="*{name}" type="text" class="form-control" required maxlength="50">
             </div>
             <div class="form-group">
-                <label> Doctor Name:</label>
-                <input placeholder="Doctor Name" th:field="*{doctorName}" type="text" class="form-control">
+                <label> Стоимость первичной консультации:</label>
+                <input placeholder="Первичная" th:field="*{firstCons}" type="number" class="form-control" required maxlength="50">
             </div>
-            <ul>
-                <li th:each="product : ${theListOfProduct}">
-                    <input type="checkbox" th:field="*{productList}" th:value="${product.code}"/>
-                    <label th:text="${product}"></label>
-                </li>
-            </ul>
-            <button type="submit" class="btn btn-info col-2">Save</button>
+            <div class="form-group">
+                <label> Стоимость повторной консультации:</label>
+                <input placeholder="Повторная" th:field="*{repCons}" type="number" class="form-control" required maxlength="50">
+            </div>
+            <button type="submit" class="btn btn-lg btn-success btn-block" >Добавить</button>
         </form>
     </div>
 </main>

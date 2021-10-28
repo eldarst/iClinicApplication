@@ -48,9 +48,7 @@ public class ProductController {
 
     @GetMapping("/showFormForEditProduct")
     public String showProductEditForm(@RequestParam("productCode") long productCode, Model theModel) {
-        Product product = productService.findProduct(productCode);
-
-        theModel.addAttribute("theProduct", product);
+        theModel.addAttribute("theProduct", productService.findProduct(productCode));
         return "add-product";
     }
 

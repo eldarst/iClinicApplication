@@ -21,7 +21,7 @@
         <a class="navbar-brand mr-auto" th:href="@{/uzi/listTodayOrders}"><img th:src="@{/img/logo.png}" height="40" width="80"></a>
         <div class="collapse navbar-collapse" id="Navbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item dropdown">
+                <li class="nav-item active dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUzi" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-laptop fa-lg"></span> УЗИ</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownUzi">
@@ -49,6 +49,11 @@
                 </li>
             </ul>
         </div>
+        <form th:action="@{/logout}" method="POST">
+            <button type="submit" class="btn btn-sm">
+                <span class="fa fa-sign-out-alt"></span> Выйти
+            </button>
+        </form>
     </div>
 </nav>
 
