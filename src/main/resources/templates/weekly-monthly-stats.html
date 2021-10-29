@@ -122,14 +122,14 @@
                                         </thead>
                                         <tbody th:each="currentPeriodStat: ${stats}">
                                         <tr>
-                                            <td th:text="${currentPeriodStat.key.key}"/>
-                                            <td th:text="${currentPeriodStat.key.value.totalSum}"/>
-                                            <td th:text="${currentPeriodStat.key.value.uziTotalSum}"/>
-                                            <td th:text="${currentPeriodStat.key.value.totalPatients}"/>
-                                            <td th:text="${currentPeriodStat.key.value.maxOrder}"/>
-                                            <td th:text="${currentPeriodStat.key.value.averageOrder}"/>
-                                            <td th:text="${currentPeriodStat.key.value.mostFrequentDoctor}"/>
-                                            <td th:text="${currentPeriodStat.key.value.mostFrequentProduct}"/>
+                                            <td th:text="${currentPeriodStat.periodName}"/>
+                                            <td th:text="${currentPeriodStat.periodTotalStats.totalSum}"/>
+                                            <td th:text="${currentPeriodStat.periodTotalStats.uziTotalSum}"/>
+                                            <td th:text="${currentPeriodStat.periodTotalStats.totalPatients}"/>
+                                            <td th:text="${currentPeriodStat.periodTotalStats.maxOrder}"/>
+                                            <td th:text="${currentPeriodStat.periodTotalStats.averageOrder}"/>
+                                            <td th:text="${currentPeriodStat.periodTotalStats.mostFrequentDoctor}"/>
+                                            <td th:text="${currentPeriodStat.periodTotalStats.mostFrequentProduct}"/>
                                             <td class="show-details"><i class="fas fa-angle-down"></i></td>
                                         </tr>
                                         <tr class="hideRow">
@@ -153,7 +153,7 @@
                                                         </tr>
                                                         </thead>
                                                         <tbody>
-                                                        <tr th:each="currentSubPeriodStat: ${currentPeriodStat.value}">
+                                                        <tr th:each="currentSubPeriodStat: ${currentPeriodStat.periodStatsDetails}">
                                                             <td th:text="${currentSubPeriodStat.key}"/>
                                                             <td th:text="${currentSubPeriodStat.value.totalSum}"/>
                                                             <td th:text="${currentSubPeriodStat.value.uziTotalSum}"/>

@@ -3,6 +3,7 @@ package kg.iclinic.application.service;
 import javafx.util.Pair;
 import kg.iclinic.application.entity.DailyStats;
 import kg.iclinic.application.entity.Order;
+import kg.iclinic.application.model.Statistics;
 import kg.iclinic.application.model.StatsPeriod;
 
 import java.text.ParseException;
@@ -15,5 +16,5 @@ public interface DailyStatsService {
 
     void save(DailyStats stats);
 
-    LinkedHashMap<Pair<String,DailyStats>, LinkedHashMap<String, DailyStats>> getPeriodStats(Date lastDayOfPeriod, StatsPeriod periodFunctions);
+    List<Statistics> getPeriodStats(Date lastDayOfPeriod, StatsPeriod periodFunctions);
 }

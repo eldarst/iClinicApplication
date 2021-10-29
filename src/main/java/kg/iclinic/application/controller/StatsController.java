@@ -47,7 +47,7 @@ public class StatsController {
     private static final  StatsPeriod monthStats = new StatsPeriod((month) -> month.withDayOfMonth(1),
             (periodStart) -> {
                 LocalDate nextSunday = periodStart.with(nextOrSame(SUNDAY));
-                return nextSunday.isAfter(periodStart) ? nextSunday : nextSunday.withDayOfMonth(nextSunday.lengthOfMonth());
+                return nextSunday.isAfter(periodStart) || nextSunday.equals(periodStart) ? nextSunday : nextSunday.withDayOfMonth(nextSunday.lengthOfMonth());
             },
             (period) -> period.plusDays(1),
             (date) -> {

@@ -5,6 +5,7 @@ import kg.iclinic.application.dao.DailyStatsRepository;
 import kg.iclinic.application.entity.DailyStats;
 import kg.iclinic.application.entity.Order;
 import kg.iclinic.application.model.CountStats;
+import kg.iclinic.application.model.Statistics;
 import kg.iclinic.application.model.StatsPeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,6 @@ public class DailyStatsServiceImpl implements DailyStatsService{
         return stats;
     }
 
-
     @Override
     public DailyStats getStatsByDate(Date dateFrom, Date dateTo) {
         DailyStats stats = dailyStatsRepository.findByDateFromAndDateTo(dateFrom, dateTo);
@@ -62,43 +62,40 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     }
 
     @Override
-    public LinkedHashMap<Pair<String,DailyStats>, LinkedHashMap<String, DailyStats>> getPeriodStats(Date lastDayOfPeriod, StatsPeriod periodFunctions) {
-        LinkedHashMap<Pair<String,DailyStats>, LinkedHashMap<String, DailyStats>> stats = new LinkedHashMap<>();
+    public ArrayList<Statistics> getPeriodStats(Date lastDayOfPeriod, StatsPeriod periodFunctions) {
+        ArrayList<Statistics> stats = new ArrayList<>();
         LocalDate lastDay = LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(lastDayOfPeriod) );
         FillStats(stats, lastDay, periodFunctions);
         return stats;
     }
 
-    private void FillStats(LinkedHashMap<Pair<String,DailyStats>, LinkedHashMap<String, DailyStats>> stats, LocalDate lastDay, StatsPeriod periodFunctions) {
+    private void FillStats(ArrayList<Statistics> stats, LocalDate lastDay, StatsPeriod periodFunctions) {
         Refresh();
         LocalDate firstDayOfPeriod = periodFunctions.getFirstDayOfAllPeriod().apply(lastDay);
 
-        for(LocalDate day = firstDayOfPeriod; day.isBefore(lastDay);) {
+        for(LocalDate day = firstDayOfPeriod; day.isBefore(lastDay);)
             day = FillPeriodStats(stats, lastDay, periodFunctions, day);
-        }
     }
 
-    private void Refresh() {
-        List<DailyStats> topStats = dailyStatsRepository.findFirst100ByOrderByDateTo();
-        topStats.forEach(stat -> dailyStatsRepository.delete(stat));
-    }
-
-    private LocalDate FillPeriodStats(LinkedHashMap<Pair<String, DailyStats>, LinkedHashMap<String, DailyStats>> stats, LocalDate lastDay, StatsPeriod periodFunctions, LocalDate day) {
+    private LocalDate FillPeriodStats(ArrayList<Statistics> stats, LocalDate lastDay, StatsPeriod periodFunctions, LocalDate day) {
         int periodCount = periodFunctions.getPeriodCount().apply(day) - 1;
         String periodName = periodFunctions.getPeriodNames().get(periodCount);
         LocalDate periodEnd = periodFunctions.getEndOfSubPeriod().apply(day);
         if(periodEnd.isBefore(lastDay)) {
             LinkedHashMap<String, DailyStats> detailStats = (LinkedHashMap<String, DailyStats>) GetPeriodStats(day, periodEnd, periodFunctions);
-            stats.put(new Pair<>(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(periodEnd))),
-                    detailStats);
+            stats.add(new Statistics(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(periodEnd)), detailStats));
             day = periodEnd.plusDays(1);
         } else {
             LinkedHashMap<String, DailyStats> detailStats = (LinkedHashMap<String, DailyStats>) GetPeriodStats(day, lastDay, periodFunctions);
-            stats.put(new Pair<>(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(lastDay))),
-                    detailStats);
+            stats.add(new Statistics(periodName, getStatsByDate(parseLocal.apply(day), parseLocal.apply(lastDay)), detailStats));
             day = lastDay;
         }
         return day;
+    }
+
+    private void Refresh() {
+        List<DailyStats> topStats = dailyStatsRepository.findFirst100ByOrderByDateTo();
+        topStats.forEach(stat -> dailyStatsRepository.delete(stat));
     }
 
     private Map<String, DailyStats> GetPeriodStats(LocalDate firstDay, LocalDate periodEnd, StatsPeriod periodFunctions) {
@@ -122,6 +119,4 @@ public class DailyStatsServiceImpl implements DailyStatsService{
     public void save(DailyStats stats) {
         dailyStatsRepository.save(stats);
     }
-
-
 }
