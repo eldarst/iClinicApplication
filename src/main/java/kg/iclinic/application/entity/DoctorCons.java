@@ -28,6 +28,9 @@ public class DoctorCons {
     @Column(name = "Rep_Cons", nullable = false)
     @NonNull private int repCons;
 
+    @Column(name = "For_Clinic", nullable = false)
+    @NonNull private int forClinic;
+
     @Override
     public String toString() {
         return  name;

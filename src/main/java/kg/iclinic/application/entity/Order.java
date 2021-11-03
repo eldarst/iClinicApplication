@@ -43,25 +43,15 @@ public class Order implements Serializable {
     private List<Product> productList;
 
     public String showProductList() {
-        StringBuilder result = new StringBuilder();
-        boolean firstElement = true;
-        for(Product product: productList){
-            if(firstElement) {
-                result.append(product.getName());
-                firstElement = false;
-            } else {
-                result.append(", ").append(product.getName());
-            }
-        }
-        return result.toString();
+        return productList.stream()
+                .map(product -> product.getName())
+                .reduce((product1, product2) -> product1 + ", " + product2)
+                .get();
     }
 
     public void calculateSum() {
-
-        double currentSum = 0;
-        for(Product product: productList) {
-            currentSum += product.getPrice();
-        }
-        this.sum = currentSum;
+        this.sum = productList.stream()
+                .mapToDouble(Product::getPrice)
+                .sum();
     }
 }

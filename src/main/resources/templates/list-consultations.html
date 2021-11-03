@@ -19,7 +19,7 @@
         <a class="navbar-brand mr-auto" th:href="@{/uzi/listTodayOrders}"><img th:src="@{/img/logo.png}" height="40" width="80"></a>
         <div class="collapse navbar-collapse" id="Navbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active dropdown">
+                <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUzi" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-laptop fa-lg"></span> УЗИ</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownUzi">
@@ -30,8 +30,14 @@
 
                 <li class="nav-item"><a class="nav-link" href="#">
                     <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-users fa-lg"></span>
-                    Консультация</a></li>
+                <li class="nav-item active dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCons" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="fa fa-laptop fa-lg"></span> Консультация</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownCons">
+                        <a class="dropdown-item" href="#">Записи консультаций</a>
+                        <a class="dropdown-item" th:href="@{/cons/listDoctors}">Список врачей</a>
+                    </div>
+                </li>
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-calculator fa-lg"></span> Статистика</a>
@@ -66,7 +72,7 @@
         <tr>
             <th scope="col">Имя врача</th>
             <th scope="col">Имя пациента</th>
-            <th scope="col">Врачу</th>
+            <th scope="col">Сумма</th>
             <th scope="col">Остается</th>
             <th scope="col">Действия</th>
         </tr>
@@ -74,14 +80,14 @@
 
         <tbody>
         <tr th:each="tempCons: ${theListOfConsultation}">
-            <td th:text="${tempCons.doctorName}"/>
-            <td th:text="${tempCons.patientName}"/>
-            <td th:text="${tempCons.doctorCash}"/>
-            <td th:text="${tempCons.clinicCash}"/>
+            <td th:text="${tempCons.doctor}"/>
+            <td th:text="${tempCons.patient}"/>
+            <td th:text="${tempCons.price}"/>
+            <td th:text="${tempCons.forClinic}"/>
             <td>
-                <a th:href="@{/cons/showFormForEditDoctor(doctorId=${tempDoctor.id})}"
+                <a th:href="@{/cons/showFormForEditConsultation(consultationId=${tempCons.id})}"
                    class="btn btn-info btn-sm">Update</a>
-                <a th:href="@{/cons/deleteDoctor(doctorId=${tempDoctor.id})}"
+                <a th:href="@{/cons/deleteConsultation(consultationId=${tempCons.id})}"
                    class="btn btn-danger btn-sm"
                    onclick="if(!(confirm('Are your sure want to delete the Doctor?'))) return false">Delete</a>
             </td>
@@ -106,20 +112,24 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <form id="reused_form" role="form" action="#" th:action="@{/cons/saveDoctor}"
-                          th:object="${theDoctor}" method="POST">
+                    <form id="reused_form" role="form" action="#" th:action="@{/cons/saveConsultation}"
+                          th:object="${theConsultation}" method="POST">
                         <input type="hidden" th:field="*{id}"/>
                         <div class="form-group">
                             <label> Имя врача:</label>
-                            <input placeholder="Имя врача" th:field="*{doctorName}" type="text" class="form-control" required maxlength="50">
+                            <select th:field="*{doctor}" required>
+                                <option class="form-control" th:each="tempDoc : ${theDoctorList}" th:value="${tempDoc}" th:text="${tempDoc}">
+                            </select>
                         </div>
                         <div class="form-group">
                             <label> Имя пациента:</label>
-                            <input placeholder="Имя пациента" th:field="*{patientName}" type="number" class="form-control" required maxlength="50">
+                            <input placeholder="Имя пациента" th:field="*{patient}" type="text" class="form-control" required maxlength="50">
                         </div>
-                        <div class="form-group">
-                            <label> :</label>
-                            <input placeholder="" th:field="*{repCons}" type="number" class="form-control" required maxlength="50">
+                        <div class="alert alert-warning alert-dissmissible" role="alert">
+                            <button type="butoon" class="close" date-dismiss="alert">
+                                <span>&times;</span>
+                            </button>
+                            <strong>xxx-ое посещение</strong><p> К оплате <strong>500</strong> сом!</p>
                         </div>
                         <button type="submit" class="btn btn-lg btn-success btn-block" >Добавить</button>
                     </form>

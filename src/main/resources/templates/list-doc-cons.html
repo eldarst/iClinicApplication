@@ -19,19 +19,25 @@
         <a class="navbar-brand mr-auto" th:href="@{/uzi/listTodayOrders}"><img th:src="@{/img/logo.png}" height="40" width="80"></a>
         <div class="collapse navbar-collapse" id="Navbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active dropdown">
+                <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUzi" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-laptop fa-lg"></span> УЗИ</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownUzi">
                         <a class="dropdown-item" th:href="@{/uzi/listTodayOrders}">Записи УЗИ</a>
-                        <a class="dropdown-item" href="#">Список услуг УЗИ</a>
+                        <a class="dropdown-item" th:href="@{/uzi/listProducts}">Список услуг УЗИ</a>
                     </div>
                 </li>
 
                 <li class="nav-item"><a class="nav-link" href="#">
                     <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-users fa-lg"></span>
-                    Консультация</a></li>
+                <li class="nav-item active dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCons" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="fa fa-laptop fa-lg"></span> Консультация</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownCons">
+                        <a class="dropdown-item" th:href="@{/cons/listTodayOrders}">Записи консультаций</a>
+                        <a class="dropdown-item" href="#">Список врачей</a>
+                    </div>
+                </li>
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-calculator fa-lg"></span> Статистика</a>
@@ -66,6 +72,7 @@
             <th scope="col">Имя врача</th>
             <th scope="col">Первичный прием</th>
             <th scope="col">Вторичный прием</th>
+            <th scope="col">Остается клинике</th>
             <th scope="col">Действия</th>
         </tr>
         </thead>
@@ -75,6 +82,7 @@
             <td th:text="${tempDoctor.name}"/>
             <td th:text="${tempDoctor.firstCons}"/>
             <td th:text="${tempDoctor.repCons}"/>
+            <td th:text="${tempDoctor.forClinic}"/>
             <td>
                 <a th:href="@{/cons/showFormForEditDoctor(doctorId=${tempDoctor.id})}"
                    class="btn btn-info btn-sm">Update</a>
@@ -117,6 +125,10 @@
                         <div class="form-group">
                             <label> Стоимость повторной консультации:</label>
                             <input placeholder="Повторная" th:field="*{repCons}" type="number" class="form-control" required maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label> Остается клинике:</label>
+                            <input placeholder="Остается" th:field="*{forClinic}" type="number" class="form-control" required maxlength="50">
                         </div>
                         <button type="submit" class="btn btn-lg btn-success btn-block" >Добавить</button>
                     </form>
