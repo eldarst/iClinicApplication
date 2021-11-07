@@ -65,26 +65,27 @@
     <div class="container">
         <h1>Изменить данные врача</h1>
         <hr>
-        <form id="reused_form" role="form" action="#" th:action="@{/cons/saveDoctor}"
-              th:object="${theDoctor}" method="POST">
+        <form id="reused_form" role="form" action="#" th:action="@{/cons/saveConsultation}"
+              th:object="${theConsultation}" method="POST">
             <input type="hidden" th:field="*{id}"/>
             <div class="form-group">
-                <label> Имя:</label>
-                <input placeholder="Имя" th:field="*{name}" type="text" class="form-control" required maxlength="50">
+                <label> Имя врача:</label>
+                <select th:field="*{doctor}" required>
+                    <option class="form-control" th:each="tempDoc : ${theDoctorList}" th:value="${tempDoc.id}" th:text="${tempDoc}">
+                </select>
             </div>
             <div class="form-group">
-                <label> Стоимость первичной консультации:</label>
-                <input placeholder="Первичная" th:field="*{firstCons}" type="number" class="form-control" required maxlength="50">
+                <label> Имя пациента:</label>
+                <input placeholder="Имя пациента" th:field="*{patient}" type="text" class="form-control" required maxlength="50">
             </div>
-            <div class="form-group">
-                <label> Стоимость повторной консультации:</label>
-                <input placeholder="Повторная" th:field="*{repCons}" type="number" class="form-control" required maxlength="50">
+            <div>
+                <label> Стоимость консультации:</label>
+                <input placeholder="Стоимость" th:field="*{price}" type="number" class="form-control" required maxlength="6">
             </div>
-            <div class="form-group">
-                <label> Остается клинике:</label>
-                <input placeholder="Остается" th:field="*{forClinic}" type="number" class="form-control" required maxlength="50">
+            <div>
+                <label> Остается:</label>
+                <input placeholder="Остается" th:field="*{forClinic}" type="number" class="form-control" required maxlength="6">
             </div>
-            <br>
             <button type="submit" class="btn btn-lg btn-success btn-block" >Изменить</button>
         </form>
     </div>

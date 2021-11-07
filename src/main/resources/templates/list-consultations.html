@@ -32,7 +32,7 @@
                     <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a></li>
                 <li class="nav-item active dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCons" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="fa fa-laptop fa-lg"></span> Консультация</a>
+                        <span class="fa fa-users fa-lg"></span> Консультация</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownCons">
                         <a class="dropdown-item" href="#">Записи консультаций</a>
                         <a class="dropdown-item" th:href="@{/cons/listDoctors}">Список врачей</a>
@@ -70,6 +70,7 @@
     <table class="table table-striped table-bordered table-hover">
         <thead class="thead-dark">
         <tr>
+            <th scope="col">№</th>
             <th scope="col">Имя врача</th>
             <th scope="col">Имя пациента</th>
             <th scope="col">Сумма</th>
@@ -79,8 +80,9 @@
         </thead>
 
         <tbody>
-        <tr th:each="tempCons: ${theListOfConsultation}">
-            <td th:text="${tempCons.doctor}"/>
+        <tr th:each="tempCons, stats: ${theListOfConsultation}">
+            <td th:text="${stats.count}"/>
+            <td th:text="${tempCons.doctor.name}"/>
             <td th:text="${tempCons.patient}"/>
             <td th:text="${tempCons.price}"/>
             <td th:text="${tempCons.forClinic}"/>
@@ -118,18 +120,20 @@
                         <div class="form-group">
                             <label> Имя врача:</label>
                             <select th:field="*{doctor}" required>
-                                <option class="form-control" th:each="tempDoc : ${theDoctorList}" th:value="${tempDoc}" th:text="${tempDoc}">
+                                <option class="form-control" th:each="tempDoc : ${theDoctorList}" th:value="${tempDoc.id}" th:text="${tempDoc}">
                             </select>
                         </div>
                         <div class="form-group">
                             <label> Имя пациента:</label>
                             <input placeholder="Имя пациента" th:field="*{patient}" type="text" class="form-control" required maxlength="50">
                         </div>
-                        <div class="alert alert-warning alert-dissmissible" role="alert">
-                            <button type="butoon" class="close" date-dismiss="alert">
-                                <span>&times;</span>
-                            </button>
-                            <strong>xxx-ое посещение</strong><p> К оплате <strong>500</strong> сом!</p>
+                        <div>
+                            <label> Стоимость консультации:</label>
+                            <input placeholder="Стоимость" th:field="*{price}" type="number" class="form-control" required maxlength="6">
+                        </div>
+                        <div>
+                            <label> Остается:</label>
+                            <input placeholder="Остается" th:field="*{forClinic}" type="number" class="form-control" required maxlength="6">
                         </div>
                         <button type="submit" class="btn btn-lg btn-success btn-block" >Добавить</button>
                     </form>

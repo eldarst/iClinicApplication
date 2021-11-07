@@ -56,6 +56,7 @@ public class ConsultController {
         return "redirect:/cons/listDoctors";
     }
 
+    Consultation lastSavedConsultation = new Consultation();
     @GetMapping("/listTodayOrders")
     public String getTodayOrders(Model theModel) throws ParseException {
         theModel.addAttribute("theDate", dateFormat.parse(dateFormat.format(new Date())).toString());
@@ -69,20 +70,16 @@ public class ConsultController {
 
     @GetMapping("/showFormForEditConsultation")
     public String showProductEditConsultation(@RequestParam("consultationId") long consultationId, Model theModel) {
+        theModel.addAttribute("theDoctorList", doctorConsService.findAllDoctors());
         theModel.addAttribute("theConsultation", consultationService.findConsultation(consultationId));
-        return "edit-current-consultations";
+        return "edit-current-consultation";
     }
 
     @PostMapping("/saveConsultation")
     public String saveConsultation(@ModelAttribute("theConsultation") Consultation theConsultation) {
         if (theConsultation != null) {
-            theConsultation.setConsultationDate(new Date());
-            DoctorCons theDoctor = theConsultation.getDoctor();
-            List<Consultation> previousVisits = consultationService.findConsultationByPatientName(theConsultation.getPatient());
-//            if(previousVisit != null && theDoctor.equals(previousVisit.getDoctor())) {
-//                theConsultation.setPrice(theDoctor.getRepCons());
-//            }
-            theConsultation.setForClinic(theDoctor.getForClinic());
+            Date today = new Date();
+            theConsultation.setConsultationDate(today);
             consultationService.saveConsultation(theConsultation);
         }
         return "redirect:/cons/listTodayOrders";

@@ -44,9 +44,10 @@ public class Order implements Serializable {
 
     public String showProductList() {
         return productList.stream()
-                .map(product -> product.getName())
+                .map(Product::getName)
                 .reduce((product1, product2) -> product1 + ", " + product2)
-                .get();
+                .orElse("");
+
     }
 
     public void calculateSum() {

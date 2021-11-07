@@ -30,8 +30,14 @@
 
                 <li class="nav-item"><a class="nav-link" href="#">
                     <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-users fa-lg"></span>
-                    Консультация</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCons" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="fa fa-users fa-lg"></span> Консультация</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownCons">
+                        <a class="dropdown-item" th:href="@{/cons/listTodayOrders}">Записи консультаций</a>
+                        <a class="dropdown-item" th:href="@{/cons/listDoctors}">Список врачей</a>
+                    </div>
+                </li>
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="nav-item active dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-calculator fa-lg"></span> Статистика</a>

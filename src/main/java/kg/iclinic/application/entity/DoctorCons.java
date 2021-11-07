@@ -33,6 +33,6 @@ public class DoctorCons {
 
     @Override
     public String toString() {
-        return  name;
+        return  String.format("%s-%dс, %dс, %dс", name, firstCons, repCons, forClinic);
     }
 }
