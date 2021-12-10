@@ -18,7 +18,7 @@ import java.util.Locale;
 
 @Controller
 @RequestMapping("/cons")
-public class ConsultController {
+public class MainConsultController {
     @Autowired
     DoctorConsService doctorConsService;
 
@@ -64,6 +64,7 @@ public class ConsultController {
         theModel.addAttribute("theListOfConsultation", todayOrders);
         theModel.addAttribute("theDoctorList", doctorConsService.findAllDoctors());
         theModel.addAttribute("theConsultation", new Consultation());
+        theModel.addAttribute("theDoctor", new DoctorCons());
 
         return "list-consultations";
     }

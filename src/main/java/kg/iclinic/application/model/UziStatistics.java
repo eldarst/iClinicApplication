@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class Statistics {
+public class UziStatistics {
     private String periodName;
     private DailyStats periodTotalStats;
     private LinkedHashMap<String, DailyStats> periodStatsDetails;

@@ -11,7 +11,7 @@ import java.text.ParseException;
 
 @Controller
 @RequestMapping("/uzi")
-public class ProductController {
+public class ProductUziController {
 
     @Autowired
     ProductService productService;

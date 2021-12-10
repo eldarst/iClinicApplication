@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
     <link th:href="@{/webjars//font-awesome/css/all.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+    <link rel="icon" th:href="@{/img/icon.png}" />
 </head>
 <body>
 <nav class="navbar navbar-dark navbar-expand-sm fixed-top">
@@ -42,6 +43,8 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-calculator fa-lg"></span> Статистика</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" th:href="@{/cons/showPeriodStats}">Консультации</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Недельная зарплата врачей</a>
                         <a class="dropdown-item" th:href="@{/uzi/showSalariesBetweenDatesForm}">Зарплата врачей по датам</a>
                         <div class="dropdown-divider"></div>
@@ -71,18 +74,23 @@
     <table class="table table-striped table-bordered table-hover">
         <thead class="thead-dark">
         <tr>
-            <th scope ="col">#</th>
-            <th scope="col">Doctor</th>
-            <th scope="col">Patients</th>
-            <th scope="col">Salary</th>
+            <th scope ="col">№</th>
+            <th scope="col">Доктор</th>
+            <th scope="col">Пациент</th>
+            <th scope="col">Зарплата</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="doctor, stat: ${theListOfDoctorsWithSalaries}">
             <td th:text="${stat.index + 1}"/>
             <td th:text="${doctor.key}"/>
-            <th th:text="${doctor.value.value}"/>
+            <td th:text="${doctor.value.value}"/>
             <td th:text="${doctor.value.key}"/>
+        </tr>
+        <tr>
+            <td colspan="2" />
+            <td><b th:text="${#aggregates.sum(theListOfDoctorsWithSalaries.![value].![value])}" /></td>
+            <td><b th:text="${#aggregates.sum(theListOfDoctorsWithSalaries.![value].![key])}" /></td>
         </tr>
         </tbody>
     </table>

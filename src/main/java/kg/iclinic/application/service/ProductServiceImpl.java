@@ -33,13 +33,6 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
-    @Override
-    public List<Product> getProductList(List<String> codes) {
-        return codes.stream()
-                .mapToLong(Long::parseLong)
-                .mapToObj(this::findProduct)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void delete(Long productCode) {

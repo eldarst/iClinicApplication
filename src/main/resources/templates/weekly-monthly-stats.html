@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
     <link th:href="@{/webjars//font-awesome/css/all.css}" rel="stylesheet" type="text/css" />
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+    <link rel="icon" th:href="@{/img/icon.png}" />
 </head>
 <body>
 <nav class="navbar navbar-dark navbar-expand-sm fixed-top">
@@ -35,6 +36,8 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-calculator fa-lg"></span> Статистика</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" th:href="@{/cons/showPeriodStats}">Консультации</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/uzi/listCurrentWeekSalary}">Недельная зарплата врачей</a>
                         <a class="dropdown-item" th:href="@{/uzi/showSalariesBetweenDatesForm}">Зарплата врачей по датам</a>
                         <div class="dropdown-divider"></div>
@@ -63,10 +66,10 @@
             <label th:text="${#calendars.format(lastDay, 'dd MMM yyyy')}"/>
         </h1>
         <hr>
-        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodBefore=0, periodAfter=0, period=month)}"
+        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodAdd=0, period=month)}"
            class="btn btn-info btn-sm">Показать статистику по месяцам</a>
 
-        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodBefore=0, periodAfter=0, period=year)}"
+        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodAdd=0, period=year)}"
            class="btn btn-info btn-sm">Показать статистику по годам</a>
     </div>
     <br>

@@ -15,7 +15,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/uzi")
-public class MainController {
+public class MainUziController {
     private static final DateFormat dateFormat = new SimpleDateFormat(
             "MM/dd/yyyy", Locale.US);
 

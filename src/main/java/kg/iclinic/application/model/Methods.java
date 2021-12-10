@@ -23,11 +23,4 @@ public class Methods {
         }
         return today;
     }
-    public static LocalDate GetFirstDayOfTheWeek(LocalDate day) {
-        return day.with(previousOrSame(MONDAY));
-    }
-
-    public static LocalDate GetLastDayOfTheWeek(LocalDate day) {
-        return day.with(previousOrSame(SUNDAY));
-    }
 }

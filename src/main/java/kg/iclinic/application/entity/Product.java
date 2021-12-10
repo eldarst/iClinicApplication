@@ -4,6 +4,8 @@ package kg.iclinic.application.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,11 +13,12 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "Products")
 @Data
 @NoArgsConstructor
+@Table(name = "Products")
+@SQLDelete(sql = "UPDATE products SET is_deleted = true WHERE code=?")
+@Where(clause = "is_deleted=false")
 public class Product implements Serializable {
-
     private static final long serialVersionUID = -1000119078147252957L;
 
     @Id
@@ -32,6 +35,9 @@ public class Product implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "Create_Date", nullable = false)
     @NonNull private Date createDate;
+
+    @Column(name = "Is_Deleted", nullable = false)
+    @NonNull private Boolean isDeleted;
 
     @Column(name = "Frequency")
     @NonNull private Integer frequency = 0;

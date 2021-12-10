@@ -11,6 +11,7 @@
     <link th:href="@{/webjars//font-awesome/css/all.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="icon" th:href="@{/img/icon.png}" />
 </head>
 <body>
 <nav class="navbar navbar-dark navbar-expand-sm fixed-top">
@@ -44,6 +45,8 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-calculator fa-lg"></span> Статистика</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" th:href="@{/cons/showPeriodStats}">Консультации</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/uzi/listCurrentWeekSalary}">Недельная зарплата врачей</a>
                         <a class="dropdown-item" th:href="@{/uzi/showSalariesBetweenDatesForm}">Зарплата врачей по датам</a>
                         <div class="dropdown-divider"></div>
@@ -69,8 +72,8 @@
     <hr>
     <form action="#" th:action="@{/uzi/addProduct}" th:object="${theProduct}" method="POST">
         <input type="hidden" th:field="*{code}" />
-        <input placeholder="Name" th:field="*{name}" type="text" class="form-control col-4 mb-4">
-        <input placeholder="Price" th:field="*{price}" type="text" class="form-control col-4 mb-4">
+        <input placeholder="Название" th:field="*{name}" type="text" class="form-control col-4 mb-4">
+        <input placeholder="Стоимость" th:field="*{price}" type="text" class="form-control col-4 mb-4">
         <input type="hidden" th:field="*{frequency}" />
         <button type="submit" class="btn btn-info col-2">Save</button>
     </form>

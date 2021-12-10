@@ -9,6 +9,7 @@
     <link th:href="@{/webjars//font-awesome/css/all.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="icon" th:href="@{/img/icon.png}" />
 </head>
 <body>
 
@@ -43,6 +44,8 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-calculator fa-lg"></span> Статистика</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" th:href="@{/cons/showPeriodStats}">Консультации</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/uzi/listCurrentWeekSalary}">Недельная зарплата врачей</a>
                         <a class="dropdown-item" th:href="@{/uzi/showSalariesBetweenDatesForm}">Зарплата врачей по датам</a>
                         <div class="dropdown-divider"></div>
@@ -73,8 +76,8 @@
     <hr>
     <form action="#" th:action="@{/uzi/listOrderBetweenDates}">
         <div class="col-md-12 d-flex justify-content-around">
-            <div class="form-group">
-                <label class="form-label">Date From</label>
+            <div class="form-group d-flex flex-row">
+                <label class="form-label">C:&nbsp;</label>
                 <div class='input-group date' id='timepicker1' data-target-input="nearest">
                     <input type='text' class="form-control datetimepicker-input" th:name="dateFrom" data-target="timepicker1" required/>
                     <div class="input-group-append" data-target="#timepicker1" data-toggle="datetimepicker">
@@ -82,8 +85,8 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Date To</label>
+            <div class="form-group d-flex flex-row">
+                <label class="form-label">По:&nbsp;</label>
                 <div class='input-group date' id='timepicker2' data-target-input="nearest">
                     <input type='text' class="form-control datetimepicker-input" th:name="dateTo" data-target="timepicker2" required/>
                     <div class="input-group-append" data-target="#timepicker2" data-toggle="datetimepicker">
@@ -91,10 +94,10 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="doctorDataList" class="form-label">Doctor</label>
+            <div class="form-group d-flex flex-row">
+                <label for="doctorDataList" class="form-label">Доктор:&nbsp;</label>
                 <input class="form-control" list="doctorOptions" id="doctorDataList"
-                       placeholder="Type to search..." th:name="doctorName">
+                       placeholder="Печатать для поиска..." th:name="doctorName">
                 <datalist id="doctorOptions">
                     <option></option>
                     <option th:each="doctor : ${theListOfDoctor}" th:value="${doctor}"
@@ -102,8 +105,7 @@
                 </datalist>
             </div>
             <div class="form-group">
-                <br>
-                <button type="submit" class="btn btn-info form-control">Show</button>
+                <button type="submit" class="btn btn-info form-control">Показать</button>
             </div>
         </div>
     </form>
@@ -111,11 +113,11 @@
         <thead class="thead-dark">
         <tr>
             <th scope="col">#</th>
-            <th scope="col">Doctor Name</th>
-            <th scope="col">Patient Name</th>
-            <th scope="col">Order Date</th>
-            <th scope="col">Order</th>
-            <th scope="col">Sum</th>
+            <th scope="col">Доктор</th>
+            <th scope="col">Пациент</th>
+            <th scope="col">Дата</th>
+            <th scope="col">Исследования</th>
+            <th scope="col">Стоимость</th>
         </tr>
         </thead>
         <tbody>

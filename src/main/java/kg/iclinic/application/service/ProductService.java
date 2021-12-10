@@ -12,7 +12,5 @@ public interface ProductService {
 
     List<Product> findProductList();
 
-    List<Product> getProductList(List<String> codes);
-
     void delete(Long productCode);
 }

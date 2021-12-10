@@ -48,8 +48,8 @@ public class ConsultationServiceImpl implements ConsultationService{
     }
 
     @Override
-    public List<Consultation> getSortedOrders(Date dateForm, Date dateTo, String name) {
-        return null;
+    public List<Consultation> getConsultationsBetweenDates(Date dateForm, Date dateTo) {
+        return consultationRepository.findByConsultationDateBetween(dateForm, dateTo);
     }
 
     @Override

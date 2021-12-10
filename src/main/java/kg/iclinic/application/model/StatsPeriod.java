@@ -12,7 +12,6 @@ import java.util.function.Function;
 public class StatsPeriod {
     private Function<LocalDate, LocalDate> firstDayOfAllPeriod;
 
-
     private Function<LocalDate, LocalDate> endOfSubPeriod;
 
     private Function<LocalDate, LocalDate> subPeriodIncrementing;

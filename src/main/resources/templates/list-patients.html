@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
     <link th:href="@{/webjars//font-awesome/css/all.css}" rel="stylesheet" type="text/css" />
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+    <link rel="icon" th:href="@{/img/icon.png}" />
 </head>
 <body>
 <nav class="navbar navbar-dark navbar-expand-sm fixed-top">
@@ -42,6 +43,8 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-calculator fa-lg"></span> Статистика</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" th:href="@{/cons/showPeriodStats}">Консультации</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/uzi/listCurrentWeekSalary}">Недельная зарплата врачей</a>
                         <a class="dropdown-item" th:href="@{/uzi/showSalariesBetweenDatesForm}">Зарплата врачей по датам</a>
                         <div class="dropdown-divider"></div>
@@ -73,11 +76,11 @@
         <thead class="thead-dark">
         <tr>
             <th scope="col">№</th>
-            <th scope="col">Patient Name</th>
-            <th scope="col">Doctor Name</th>
-            <th scope="col">Order</th>
-            <th scope="col">Sum</th>
-            <th scope="col">Action</th>
+            <th scope="col">Имя пациента</th>
+            <th scope="col">Имя врача</th>
+            <th scope="col">Исследования</th>
+            <th scope="col">Оплата</th>
+            <th scope="col">Действия</th>
         </tr>
         </thead>
 
@@ -90,21 +93,18 @@
             <td th:text="${tempPatient.sum}"/>
             <td>
                 <a th:href="@{/uzi/showFormForEditPatient(orderId=${tempPatient.id})}"
-                   class="btn btn-info btn-sm">Update</a>
+                   class="btn btn-info btn-sm">Изменить</a>
                 <a th:href="@{/uzi/deleteOrder(orderId=${tempPatient.id})}"
                    class="btn btn-danger btn-sm"
-                   onclick="if(!(confirm('Are your sure want to delete the Order?'))) return false">Delete</a>
+                   onclick="if(!(confirm('Are your sure want to delete the Order?'))) return false">Удалить</a>
             </td>
         </tr>
         <tr>
-            <td/>
-            <td/>
-            <td/>
-            <td/>
-            <td th:text="${orderSum}"/>
+            <td colspan="4" />
+            <td th:text="${#aggregates.sum(theListOfPatients.![sum])}"/>
             <td>
                 <a th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" th:href="@{/uzi/showDetailsOfOrderList}"
-                   class="btn btn-info btn-sm">Show details</a>
+                   class="btn btn-info btn-sm">Показать статистику</a>
             </td>
         </tr>
 
@@ -112,7 +112,7 @@
     </table>
     <div class="container-box rotated">
         <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">
-            Add Patient
+            Добавить пациента
         </button>
     </div>
     <div id="myModal" class="modal fade" role="dialog">
@@ -120,7 +120,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">
-                        Add Patient
+                        Добавить пациента
                     </h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
@@ -129,13 +129,13 @@
                           th:object="${thePatient}" method="POST">
                         <input type="hidden" th:field="*{id}"/>
                         <div class="form-group">
-                            <label> Patient Name:</label>
-                            <input placeholder="Patient Name" th:field="*{patientName}" type="text" class="form-control"
+
+                            <input placeholder="Пациент" th:field="*{patientName}" type="text" class="form-control"
                                    required maxlength="50">
                         </div>
                         <div class="form-group">
-                            <label> Doctor Name:</label>
-                            <input placeholder="Doctor Name" list="doctorOptions" id="doctorDataList"
+
+                            <input placeholder="Врач" list="doctorOptions" id="doctorDataList"
                                    th:field="*{doctorName}" type="text" class="form-control"
                                    required maxlength="50">
                             <datalist id="doctorOptions">
@@ -160,7 +160,7 @@
                                 </table>
                             </th:block>
                         </div>
-                        <button type="submit" class="btn btn-lg btn-success btn-block">Save</button>
+                        <button type="submit" class="btn btn-lg btn-success btn-block">Сохранить</button>
                     </form>
                     <div id="success_message" style="width:100%; height:100%; display:none; "><h3>Sent your message
                         successfully!</h3></div>

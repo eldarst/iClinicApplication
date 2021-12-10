@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CountStats {
+public class CountUziStats {
 
     public static DailyStats GetStatsByDate(List<Order> orders, Date dateFrom, Date dateTo) {
         DailyStats stats = new DailyStats();

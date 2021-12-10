@@ -7,6 +7,7 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
     <link th:href="@{/webjars//font-awesome/css/all.css}" rel="stylesheet" type="text/css" />
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+    <link rel="icon" th:href="@{/img/icon.png}" />
 </head>
 <body>
 <main>
@@ -41,6 +42,8 @@
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fa fa-calculator fa-lg"></span> Статистика</a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" th:href="@{/cons/showPeriodStats}">Консультации</a>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" th:href="@{/uzi/listCurrentWeekSalary}">Недельная зарплата врачей</a>
                             <a class="dropdown-item" th:href="@{/uzi/showSalariesBetweenDatesForm}">Зарплата врачей по датам</a>
                             <div class="dropdown-divider"></div>

@@ -43,13 +43,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // Requires login with role ROLE_EMPLOYEE or ROLE_MANAGER.
         // If not, it will redirect to /admin/login.
         http.authorizeRequests().antMatchers("/uzi/listTodayOrders", "/uzi/savePatient", "/uzi/deleteOrder", "/uzi/showFormForEditPatient",
-                "/uzi/showFormForAddProduct", "/uzi/addProduct", "/uzi/listProducts", "/uzi/deleteProduct", "/uzi/showFormForEditProduct")//
+                "/uzi/showFormForAddProduct", "/uzi/addProduct", "/uzi/listProducts", "/uzi/deleteProduct", "/uzi/showFormForEditProduct",
+                "/cons/listDoctors", "/cons/showFormForEditDoctor", "/cons/saveDoctor", "/cons/deleteDoctor", "/cons/listTodayOrders",
+                "/cons/showFormForEditConsultation", "/cons/saveConsultation", "/cons/deleteConsultation")//
                 .access("hasAnyRole('ROLE_EMPLOYEE', 'ROLE_MANAGER')");
 
         // Pages only for MANAGER
         http.authorizeRequests().antMatchers("/uzi/listOrderBetweenDates", "/uzi/showSortByDateForm",
                 "/uzi/showDetailsOfOrderList", "/uzi/showDetailsOfOrderListMonthly", "/uzi/showSalariesBetweenDatesForm", "/uzi/listSalariesBetweenDates",
-                "/uzi/listCurrentWeekSalary")
+                "/uzi/listCurrentWeekSalary", "/cons/showPeriodStats")
                 .access("hasRole('ROLE_MANAGER')");
 
         // When user login, role XX.

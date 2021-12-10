@@ -31,7 +31,7 @@ import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 @Controller
 @RequestMapping("/uzi")
-public class StatsController {
+public class StatsUziController {
 
     @Autowired
     OrderService orderService;
@@ -135,6 +135,7 @@ public class StatsController {
         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
         Date firstDate = (dateFrom.length() > 0) ? dateFormat.parse(dateFrom) : new Date();
         Date secondDate = (dateTo.length() > 0) ? dateFormat.parse(dateTo) : new Date();
+
         theModel.addAttribute("theListOfDoctorsWithSalaries", GetMappedSalary(firstDate, secondDate));
         theModel.addAttribute("dateFrom", firstDate);
         theModel.addAttribute("dateTo", secondDate);
@@ -149,7 +150,6 @@ public class StatsController {
         Date parsedFirstDay = parseLocal.apply(firstDayOfWeek);
         Date parsedLastDay = parseLocal.apply(firstDayOfWeek.plusDays(6));
 
-
         theModel.addAttribute("theListOfDoctorsWithSalaries", GetMappedSalary(parsedFirstDay, parsedLastDay));
         theModel.addAttribute("weekStart", parsedFirstDay);
         theModel.addAttribute("weekEnd", parsedLastDay);
@@ -158,7 +158,8 @@ public class StatsController {
     }
 
     private LocalDate GetFirstDayOfTheWeek() {
-        return LocalDate.now().with(previousOrSame(MONDAY));
+        int daysFromWeekStart = LocalDate.now().getDayOfWeek().getValue();
+        return LocalDate.now().minusDays(daysFromWeekStart - 1);
     }
 
     private HashMap<String, Pair<Double, Integer>> GetMappedSalary(Date dateFrom, Date dateTo) {

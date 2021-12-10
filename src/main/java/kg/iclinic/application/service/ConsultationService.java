@@ -13,6 +13,6 @@ public interface ConsultationService {
     List<Consultation> getTodayConsultations() throws ParseException;
     List<Consultation> getConsultationsByDay(Date date);
     void deleteConsultation(Long consultationId);
-    List<Consultation> getSortedOrders(Date dateForm, Date dateTo, String name);
+    List<Consultation> getConsultationsBetweenDates(Date dateForm, Date dateTo);
     List<Consultation> findConsultationByPatientName(String patient);
 }
