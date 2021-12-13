@@ -2,6 +2,7 @@ package kg.iclinic.application.service;
 
 import kg.iclinic.application.dao.ConsultationRepository;
 import kg.iclinic.application.entity.Consultation;
+import kg.iclinic.application.entity.DoctorCons;
 import kg.iclinic.application.model.Methods;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,7 @@ public class ConsultationServiceImpl implements ConsultationService{
     }
 
     @Override
-    public List<Consultation> findConsultationByPatientName(String patient) {
-        return consultationRepository.findByPatient(patient);
+    public List<Consultation> findConsultationByPatientNameAndDoctor(String patient, DoctorCons doctor) {
+        return consultationRepository.findByPatientAndAndDoctor(patient, doctor);
     }
 }

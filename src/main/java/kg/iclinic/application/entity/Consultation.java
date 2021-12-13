@@ -34,4 +34,8 @@ public class Consultation {
 
     @Column(name = "For_Clinic", nullable = false)
     private int forClinic;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "Previous_Visit", nullable = false)
+    private Date previousVisit;
 }

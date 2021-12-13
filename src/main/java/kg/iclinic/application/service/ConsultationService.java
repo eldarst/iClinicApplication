@@ -1,6 +1,7 @@
 package kg.iclinic.application.service;
 
 import kg.iclinic.application.entity.Consultation;
+import kg.iclinic.application.entity.DoctorCons;
 import kg.iclinic.application.entity.Order;
 
 import java.text.ParseException;
@@ -14,5 +15,5 @@ public interface ConsultationService {
     List<Consultation> getConsultationsByDay(Date date);
     void deleteConsultation(Long consultationId);
     List<Consultation> getConsultationsBetweenDates(Date dateForm, Date dateTo);
-    List<Consultation> findConsultationByPatientName(String patient);
+    List<Consultation> findConsultationByPatientNameAndDoctor(String patient, DoctorCons doctor);
 }
