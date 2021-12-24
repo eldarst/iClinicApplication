@@ -19,14 +19,17 @@ public class MainUziController {
     private static final DateFormat dateFormat = new SimpleDateFormat(
             "MM/dd/yyyy", Locale.US);
 
-    @Autowired
-    OrderService orderService;
+    private final OrderService orderService;
 
-    @Autowired
-    ProductService productService;
+    private final ProductService productService;
 
-    @Autowired
-    DoctorService doctorService;
+    private final DoctorService doctorService;
+
+    public MainUziController(OrderService orderService, ProductService productService, DoctorService doctorService) {
+        this.orderService = orderService;
+        this.productService = productService;
+        this.doctorService = doctorService;
+    }
 
 
     @RequestMapping("/403")

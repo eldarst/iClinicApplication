@@ -20,14 +20,17 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/cons")
 public class MainConsultController {
-    @Autowired
-    DoctorConsService doctorConsService;
+    private final DoctorConsService doctorConsService;
 
-    @Autowired
-    ConsultationService consultationService;
+    private final ConsultationService consultationService;
 
     private static final DateFormat dateFormat = new SimpleDateFormat(
             "MM/dd/yyyy", Locale.US);
+
+    public MainConsultController(DoctorConsService doctorConsService, ConsultationService consultationService) {
+        this.doctorConsService = doctorConsService;
+        this.consultationService = consultationService;
+    }
 
     @GetMapping("/listDoctors")
     public String getConsultationDocList(Model theModel) {

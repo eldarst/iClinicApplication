@@ -51,7 +51,7 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return name + " ," + price + "с";
+        return String.format("%s - %.1f сом",name, price);
     }
 
     public void updateFrequency(){

@@ -28,8 +28,15 @@
                     </div>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="#">
-                    <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a></li>
+                <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTreat" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownTreat">
+                        <a class="dropdown-item" th:href="@{/trt/listAllPatients}">Все пациенты</a>
+                        <a class="dropdown-item" th:href="@{/trt/listActivePatients}">Действующие пациенты</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" th:href="@{/trt/listTreatments}">Список лечений</a>
+                    </div>
+                </li>
                 <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-users fa-lg"></span>
                     Консультация</a></li>
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="nav-item active dropdown">
@@ -66,10 +73,10 @@
             <label th:text="${#calendars.format(lastDay, 'dd MMM yyyy')}"/>
         </h1>
         <hr>
-        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodAdd=0, period=month)}"
+        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodAdd=0, period=${'month'})}"
            class="btn btn-info btn-sm">Показать статистику по месяцам</a>
 
-        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodAdd=0, period=year)}"
+        <a th:href="@{/uzi/showDetailsOfOrderListMonthly(periodAdd=0, period=${'year'})}"
            class="btn btn-info btn-sm">Показать статистику по годам</a>
     </div>
     <br>

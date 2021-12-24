@@ -29,8 +29,15 @@
                     </div>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="#">
-                    <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a></li>
+                <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTreat" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownTreat">
+                        <a class="dropdown-item" th:href="@{/trt/listAllPatients}">Все пациенты</a>
+                        <a class="dropdown-item" th:href="@{/trt/listActivePatients}">Действующие пациенты</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" th:href="@{/trt/listTreatments}">Список лечений</a>
+                    </div>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCons" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-users fa-lg"></span> Консультация</a>

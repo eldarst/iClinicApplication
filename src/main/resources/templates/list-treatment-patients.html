@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Список пациентов</title>
+    <title>Список врачей(консультация)</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -17,20 +17,21 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand mr-auto" href="#"><img th:src="@{/img/logo.png}" height="40" width="80"></a>
+        <a class="navbar-brand mr-auto" th:href="@{/uzi/listTodayOrders}"><img th:src="@{/img/logo.png}" height="40"
+                                                                               width="80"></a>
         <div class="collapse navbar-collapse" id="Navbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active dropdown">
+                <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUzi" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="fa fa-laptop fa-lg"></span> УЗИ</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownUzi">
-                        <a class="dropdown-item" href="#">Записи УЗИ</a>
+                        <a class="dropdown-item" th:href="@{/uzi/listTodayOrders}">Записи УЗИ</a>
                         <a class="dropdown-item" th:href="@{/uzi/listProducts}">Список услуг УЗИ</a>
                     </div>
                 </li>
 
-                <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTreat" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <li class="nav-item active dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTreat" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="fa fa-thermometer fa-lg"></span> Процедурный кабинет</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownTreat">
                         <a class="dropdown-item" th:href="@{/trt/listAllPatients}">Все пациенты</a>
@@ -45,7 +46,7 @@
                         <span class="fa fa-users fa-lg"></span> Консультация</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownCons">
                         <a class="dropdown-item" th:href="@{/cons/listTodayOrders}">Записи консультаций</a>
-                        <a class="dropdown-item" th:href="@{/cons/listDoctors}">Список врачей</a>
+                        <a class="dropdown-item" href="#">Список врачей</a>
                     </div>
                 </li>
                 <li th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}" class="nav-item dropdown">
@@ -76,9 +77,8 @@
     </div>
 </nav>
 
-<br>
-
 <div class="container">
+    <br>
     <h1>Список пациентов
         <br>
         <label th:text="${#calendars.format(#calendars.createNow(), 'dd MMM yyyy')}"/>
@@ -88,11 +88,12 @@
         <thead class="thead-dark">
         <tr>
             <th scope="col">№</th>
-            <th scope="col">Имя пациента</th>
-            <th scope="col">Имя врача</th>
-            <th scope="col">Исследования</th>
-            <th scope="col">Оплата</th>
-            <th scope="col">Действия</th>
+            <th scope="col">Пациент</th>
+            <th scope="col">Лечение</th>
+            <th scope="col">Получено</th>
+            <th scope="col">Оплачено</th>
+            <th scope="col">Последняя</th>
+            <th scope="col">Действие</th>
         </tr>
         </thead>
 
@@ -100,26 +101,81 @@
         <tr th:each="tempPatient, stats: ${theListOfPatients}">
             <td th:text="${stats.count}"/>
             <td th:text="${tempPatient.patientName}"/>
-            <td th:text="${tempPatient.doctorName}"/>
-            <td th:text="${tempPatient.showProductList()}"/>
-            <td th:text="${tempPatient.sum}"/>
+            <td th:text="${tempPatient.treatment.treatmentName}"/>
+            <td th:text="${tempPatient.getVisitsCount()}"/>
+            <td th:text="${tempPatient.getPaidMoney()}"/>
+            <td th:text="${tempPatient.lastVisit}"/>
             <td>
-                <a th:href="@{/uzi/showFormForEditPatient(orderId=${tempPatient.id})}"
-                   class="btn btn-info btn-sm">Изменить</a>
-                <a th:href="@{/uzi/deleteOrder(orderId=${tempPatient.id})}"
+                <a th:href="@{/trt/markToday(patientId=${tempPatient.id})}"
                    class="btn btn-danger btn-sm"
-                   onclick="if(!(confirm('Are your sure want to delete the Order?'))) return false">Удалить</a>
+                   onclick="if(!(confirm('Are you sure want to mark patient?'))) return false">Принял</a>
+
+                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" th:attr="data-target='#payForm' + ${tempPatient.id}" >
+                    Оплата
+                </button>
+                <div th:id="'payForm' + ${tempPatient.id}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" th:text="${tempPatient.patientName}"></h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/trt/pay}" method="get">
+                                    <input type="hidden" name="patientId" th:value="${tempPatient.id}" />
+                                    <label> Оплата:</label>
+                                    <input placeholder="Оплата" type="number" name="payment" class="form-control"
+                                           required maxlength="50">
+                                    <br>
+                                    <button type="submit" class="btn btn-lg btn-success btn-block">Оплатить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </td>
         </tr>
         <tr>
-            <td colspan="4"/>
-            <td th:text="${#aggregates.sum(theListOfPatients.![sum])}"/>
+            <td colspan="7"/>
+        </tr>
+        <thead class="thead-dark">
+        <tr class="bg-success" th:each="tempMarkedPatient, stats: ${theListOfMarkedPatients}">
+            <td th:text="${stats.count}"/>
+            <td th:text="${tempMarkedPatient.patientName}"/>
+            <td th:text="${tempMarkedPatient.treatment.treatmentName}"/>
+            <td th:text="${tempMarkedPatient.getVisitsCount()}"/>
+            <td th:text="${tempMarkedPatient.getPaidMoney()}"/>
+            <td th:text="${tempMarkedPatient.lastVisit}"/>
             <td>
-                <a th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}"
-                   th:href="@{/uzi/showDetailsOfOrderList}"
-                   class="btn btn-info btn-sm">Показать статистику</a>
+                <a th:href="@{/trt/unmarkToday(patientId=${tempMarkedPatient.id})}"
+                   class="btn btn-danger btn-sm"
+                   onclick="if(!(confirm('Are you sure want to unmark patient?'))) return false">Отменить</a>
+                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" th:attr="data-target='#payForm' + ${tempMarkedPatient.id}">
+                    Оплата
+                </button>
+                <div th:id="'payForm' + ${tempMarkedPatient.id}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" th:text="${tempMarkedPatient.patientName}"></h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/trt/pay}" method="get">
+                                    <input type="hidden" name="patientId" th:value="${tempMarkedPatient.id}" />
+                                    <label> Оплата:</label>
+                                    <input placeholder="Оплата" type="number" name="payment" class="form-control"
+                                           required maxlength="50">
+                                    <br>
+                                    <button type="submit" class="btn btn-lg btn-success btn-block">Оплатить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </td>
         </tr>
+        </thead>
 
         </tbody>
     </table>
@@ -138,38 +194,25 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <form id="reused_form" role="form" action="#" th:action="@{/uzi/savePatient}"
+                    <form id="reused_form" role="form" action="#" th:action="@{/trt/savePatient}"
                           th:object="${thePatient}" method="POST">
                         <input type="hidden" th:field="*{id}"/>
                         <div class="form-group">
+                            <label> Имя пациента:</label>
                             <input placeholder="Пациент" th:field="*{patientName}" type="text" class="form-control"
                                    required maxlength="50">
                         </div>
                         <div class="form-group">
-                            <input placeholder="Врач" list="doctorOptions" id="doctorDataList"
-                                   th:field="*{doctorName}" type="text" class="form-control"
-                                   required maxlength="50">
-                            <datalist id="doctorOptions">
-                                <option></option>
-                                <option th:each="doctor : ${theListOfDoctor}" th:value="${doctor}"
-                                        th:text="${doctor.name}"></option>
-                            </datalist>
+                            <label> Лечение:</label>
+                            <select class="browser-default custom-select" th:field="*{treatment}">
+                                <option class="form-control" th:each="tempTreatment : ${theTreatmentList}"
+                                        th:value="${tempTreatment.id}" th:text="${tempTreatment}">
+                            </select>
                         </div>
                         <div class="form-group">
-                            <th:block th:with="colCount=${3}">
-                                <table class="table">
-                                    <tbody>
-                                    <tr th:each="r : ${#numbers.sequence(0, theListOfProduct.size(), colCount)}">
-                                        <td th:each="c: ${#numbers.sequence(0, colCount - 1)}"
-                                            th:if="${r + c &lt; theListOfProduct.size()}">
-                                            <input type="checkbox" th:field="*{productList}"
-                                                   th:value="${theListOfProduct[c + r].code}"/>
-                                            <label th:text="${theListOfProduct[c + r]}"></label>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </th:block>
+                            <label> Оплата:</label>
+                            <input placeholder="Оплата" th:field="*{paid}" type="number" class="form-control" required
+                                   maxlength="50">
                         </div>
                         <button type="submit" class="btn btn-lg btn-success btn-block">Сохранить</button>
                     </form>
@@ -183,6 +226,8 @@
         </div>
     </div>
 </div>
+
+<br>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
@@ -218,7 +263,7 @@
                     }
                 });
 
-            }//else
+            }
         }
     });
 </script>

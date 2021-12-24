@@ -20,7 +20,7 @@ public class ProductUziController {
     public String showProductAddForm(Model theModel) {
         Product theProduct = new Product();
         theModel.addAttribute("theProduct", theProduct);
-        return "add-product";
+        return "edit-product";
     }
 
     @PostMapping("/addProduct")
@@ -49,7 +49,7 @@ public class ProductUziController {
     @GetMapping("/showFormForEditProduct")
     public String showProductEditForm(@RequestParam("productCode") long productCode, Model theModel) {
         theModel.addAttribute("theProduct", productService.findProduct(productCode));
-        return "add-product";
+        return "edit-product";
     }
 
 }
