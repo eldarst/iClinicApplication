@@ -35,7 +35,7 @@ public class TreatmentStatsServiceImpl implements TreatmentStatsService{
         Set<TreatmentStats> stats = treatmentStatsRepository.findByDateFromAndDateTo(dateFrom, dateTo);
         int month = dateFrom.getMonth() - new Date().getMonth();
         if (stats == null) return CountStats(dateFrom, dateTo);
-        else if (month == 0) {
+        else if (month == 0 || stats.size() == 0) {
             treatmentStatsRepository.deleteAll(stats);
             return CountStats(dateFrom, dateTo);
         }
@@ -52,7 +52,7 @@ public class TreatmentStatsServiceImpl implements TreatmentStatsService{
                                 .collect(Collectors.toList()))
                 )
                 .collect(Collectors.toList());
-        return result.stream()
+        Set<TreatmentStats> ans = result.stream()
                 .map(s -> {
                     TreatmentStats stat = new TreatmentStats();
                     stat.setTreatment(s.getKey());
@@ -68,6 +68,8 @@ public class TreatmentStatsServiceImpl implements TreatmentStatsService{
                     return stat;
                 })
                 .collect(Collectors.toSet());
+        treatmentStatsRepository.saveAll(ans);
+        return ans;
     }
 
     @Override

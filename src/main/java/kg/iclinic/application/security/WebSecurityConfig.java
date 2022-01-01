@@ -51,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // Pages only for MANAGER
         http.authorizeRequests().antMatchers("/uzi/listOrderBetweenDates", "/uzi/showSortByDateForm",
                 "/uzi/showDetailsOfOrderList", "/uzi/showDetailsOfOrderListMonthly", "/uzi/showSalariesBetweenDatesForm", "/uzi/listSalariesBetweenDates",
-                "/uzi/listCurrentWeekSalary", "/cons/showPeriodStats")
+                "/uzi/listCurrentWeekSalary", "/cons/showPeriodStats", "/cons/listCurrentWeekConsultations", "/cons/showSortByDateForm", "/trtstats/*")
                 .access("hasRole('ROLE_MANAGER')");
 
         // When user login, role XX.

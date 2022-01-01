@@ -142,6 +142,11 @@
             <td th:text="${tempPatient.price}"/>
             <td th:text="${tempPatient.forClinic}"/>
         </tr>
+        <tr>
+            <td colspan="5" />
+            <td><b th:text="${#aggregates.sum(theListOfPatients.![price])}" /></td>
+            <td><b th:text="${#aggregates.sum(theListOfPatients.![forClinic])}" /></td>
+        </tr>
         </tbody>
     </table>
 </div>

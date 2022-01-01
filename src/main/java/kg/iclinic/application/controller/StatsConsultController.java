@@ -89,8 +89,8 @@ public class StatsConsultController {
                                         @RequestParam(value = "dateTo", required = false) String dateTo,
                                         @RequestParam(value = "doctorId", required = false) Long doctorId,
                                         Model theModel) throws ParseException {
-        Date firstDate = dateFrom!= null ? dateFormat.parse(dateFrom) : new Date();
-        Date secondDate = dateTo != null ? dateFormat.parse(dateTo): new Date();
+        Date firstDate = dateFrom != null ? dateFormat.parse(dateFrom) : new Date();
+        Date secondDate = dateTo != null ? dateFormat.parse(dateTo) : new Date();
         DoctorCons doctor = null;
         if (doctorId != null)
             doctor = doctorConsService.findDoctor(doctorId);
@@ -105,17 +105,33 @@ public class StatsConsultController {
     }
 
     @GetMapping("/listCurrentWeekConsultations")
-    public String getCurrentWeekSalaries(@RequestParam(value = "weekAdd", required = false) Integer weekAdd,
+    public String getCurrentWeekSalaries(@RequestParam(value = "doctorId", required = false) Long doctorId,
+                                         @RequestParam(value = "weekAdd", required = false) Integer weekAdd,
                                          Model theModel) {
         int weeksAdded = weekAdd != null ? weekAdd : 0;
+        DoctorCons doctor = null;
+        if (doctorId != null)
+            doctor = doctorConsService.findDoctor(doctorId);
+
         LocalDate firstDayOfWeek = Methods.GetFirstDayOfTheWeek().plusDays(weeksAdded * 7L);
         Date parsedFirstDay = parseLocal.apply(firstDayOfWeek);
         Date parsedLastDay = parseLocal.apply(firstDayOfWeek.plusDays(6));
 
-        theModel.addAttribute("theListOfPatients", consultationService.getConsultationsBetweenDates(parsedFirstDay, parsedLastDay));
+        List<Consultation> consultationList = null;
+
+        if (doctor != null) {
+            consultationList = consultationService.getDoctorConsultationsBetweenDates(parsedFirstDay, parsedLastDay, doctor);
+        } else {
+            consultationList = consultationService.getConsultationsBetweenDates(parsedFirstDay, parsedLastDay);
+        }
+
+        theModel.addAttribute("theListOfDoctor", doctorConsService.findAllDoctors());
+        theModel.addAttribute("theListOfPatients", consultationList);
         theModel.addAttribute("weekStart", parsedFirstDay);
         theModel.addAttribute("weekEnd", parsedLastDay);
         theModel.addAttribute("weekAdd", weeksAdded);
+        theModel.addAttribute("doctorId", doctorId);
+
         return "consultations-of-week";
     }
 
