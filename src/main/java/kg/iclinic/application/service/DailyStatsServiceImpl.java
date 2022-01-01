@@ -17,22 +17,21 @@ import java.util.function.Function;
 @Service
 public class DailyStatsServiceImpl implements DailyStatsService{
 
-    DailyStatsRepository dailyStatsRepository;
+    private final DailyStatsRepository dailyStatsRepository;
 
-    @Autowired
-    public DailyStatsServiceImpl(DailyStatsRepository dailyStatsRepository) {
-        this.dailyStatsRepository = dailyStatsRepository;
-    }
-
-    @Autowired
-    OrderService orderService;
+    private final OrderService orderService;
 
     Function<LocalDate, Date> parseLocal = java.sql.Date::valueOf;
 
+    @Autowired
+    public DailyStatsServiceImpl(DailyStatsRepository dailyStatsRepository, OrderService orderService) {
+        this.dailyStatsRepository = dailyStatsRepository;
+        this.orderService = orderService;
+    }
+
     @Override
     public DailyStats GetStatistics(List<Order> orders, Date dateFrom, Date dateTo) {
-        DailyStats stats = CountUziStats.GetStatsByDate(orders, dateFrom, dateTo);
-        return stats;
+        return CountUziStats.GetStatsByDate(orders, dateFrom, dateTo);
     }
 
     @Override
@@ -42,13 +41,11 @@ public class DailyStatsServiceImpl implements DailyStatsService{
         if(dateTo.before(dateFrom)) return new DailyStats();
         if( stats != null && stats.getTotalSum() == 0) {
             dailyStatsRepository.delete(stats);
-            DailyStats statistics = getStats(dateFrom, dateTo);
-            return statistics;
+            return getStats(dateFrom, dateTo);
         } else if (stats != null && stats.getTotalSum() > 0) {
             return stats;
         } else if(stats == null && today.after(dateFrom)){
-            DailyStats statistics = getStats(dateFrom, dateTo);
-            return statistics;
+            return getStats(dateFrom, dateTo);
         }
         return new DailyStats();
     }

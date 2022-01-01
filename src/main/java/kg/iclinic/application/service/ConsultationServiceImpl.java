@@ -54,6 +54,13 @@ public class ConsultationServiceImpl implements ConsultationService{
     }
 
     @Override
+    public List<Consultation> getDoctorConsultationsBetweenDates(Date dateFrom, Date dateTo, DoctorCons doctor) {
+        if (doctor != null)
+            return consultationRepository.findByConsultationDateBetweenAndDoctor(dateFrom, dateTo, doctor);
+        return consultationRepository.findByConsultationDateBetween(dateFrom, dateTo);
+    }
+
+    @Override
     public List<Consultation> findConsultationByPatientNameAndDoctor(String patient, DoctorCons doctor) {
         return consultationRepository.findByPatientAndAndDoctor(patient, doctor);
     }

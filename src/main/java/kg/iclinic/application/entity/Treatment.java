@@ -30,4 +30,9 @@ public class Treatment {
     public String toString() {
         return String.format("%s, %d раз, %s сом", treatmentName, fullTreatmentCount, treatmentPrice);
     }
+
+
+    public double getPriceForOneVisit() {
+        return treatmentPrice / fullTreatmentCount;
+    }
 }

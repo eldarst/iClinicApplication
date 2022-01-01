@@ -30,6 +30,7 @@ public class ProductServiceImpl implements ProductService {
     public void save(Product product) {
         Date today = Methods.getTodaysDate();
         product.setCreateDate(today);
+        product.setIsDeleted(false);
         productRepository.save(product);
     }
 

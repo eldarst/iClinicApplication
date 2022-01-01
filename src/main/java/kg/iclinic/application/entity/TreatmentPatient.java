@@ -41,6 +41,25 @@ public class TreatmentPatient {
             inverseJoinColumns = @JoinColumn(name = "VISIT_TR_ID"))
     private Set<TreatmentVisit> visits;
 
+    public double getForOne() {
+        if (treatment != null)
+            return treatment.getTreatmentPrice() / treatment.getFullTreatmentCount();
+        return 0;
+    }
+    public int getDebt() {
+        if (visits == null) {
+            return 0;
+        }
+        int mustBePaid = visits.size() * (int) getForOne();
+        return mustBePaid > paid ? mustBePaid - paid : 0;
+    }
+
+    public int getPaymentForToday() {
+        int forPay = (visits == null)
+                ? (int) getForOne() - paid
+                : (int) getForOne() * (visits.size() + 1) - paid;
+        return Math.max(forPay, 0);
+    }
     public String getVisitsCount() {
         if (visits == null) {
             return String.format("%d / %d", 0, treatment.getFullTreatmentCount());
@@ -49,7 +68,7 @@ public class TreatmentPatient {
     }
 
     public String getPaidMoney() {
-        return String.format("%d / %d", paid, treatment.getTreatmentPrice());
+        return String.format("%d сом / %d сом", paid, treatment.getTreatmentPrice());
     }
 
     public void addVisit(TreatmentVisit visit) {

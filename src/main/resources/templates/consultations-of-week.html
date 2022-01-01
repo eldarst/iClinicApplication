@@ -2,18 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Зарплата по датам</title>
+    <title>Недельная зарплата</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
     <link th:href="@{/webjars//font-awesome/css/all.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
     <link rel="icon" th:href="@{/img/icon.png}" />
 </head>
 <body>
-
 <nav class="navbar navbar-dark navbar-expand-sm fixed-top">
     <div class="container">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
@@ -53,7 +51,7 @@
                         <span class="fa fa-calculator fa-lg"></span> Статистика</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" th:href="@{/uzi/listCurrentWeekSalary}">Недельная зарплата врачей УЗИ</a>
-                        <a class="dropdown-item" href="#">Зарплата врачей по датам УЗИ</a>
+                        <a class="dropdown-item" th:href="@{/uzi/showSalariesBetweenDatesForm}">Зарплата врачей по датам УЗИ</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/uzi/showDetailsOfOrderList}">Статистика по дням УЗИ</a>
                         <a class="dropdown-item" th:href="@{/uzi/showDetailsOfOrderListMonthly}">Статистика по периодам УЗИ</a>
@@ -61,7 +59,7 @@
                         <a class="dropdown-item" th:href="@{/uzi/showSortByDateForm}">Записи УЗИ по датам</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/cons/showPeriodStats}">Статистика консультаций</a>
-                        <a class="dropdown-item" th:href="@{/cons/listCurrentWeekConsultations}">Записи консультаций по неделям</a>
+                        <a class="dropdown-item" href="#">Записи консультаций по неделям</a>
                         <a class="dropdown-item" th:href="@{/cons/showSortByDateForm}">Записи консультаций</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/trtstats/showDetailsOfTreatmentListMonthly}">Статистика процедурный кабинет</a>
@@ -78,86 +76,52 @@
 </nav>
 
 <br>
-
 <div class="container">
     <h1>Зарплата за
         <br>
-        <label th:text="${#calendars.format(dateFrom, 'dd MMM yyyy')}"/> -
-        <label th:text="${#calendars.format(dateTo, 'dd MMM yyyy')}"/>
-    </h1>
+        <label th:text="${#calendars.format(weekStart, 'dd MMM yyyy')}"/> -
+        <label th:text="${#calendars.format(weekEnd, 'dd MMM yyyy')}"/></h1>
     <hr>
-    <form action="#" th:action="@{/uzi/listSalariesBetweenDates}">
-        <div class='col-md-12 d-flex justify-content-around'>
-            <div class="form-group d-flex flex-row">
-                <label class="form-label">С:&nbsp;</label>
-                <div class='input-group date' id='timepicker1' data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" th:name="dateFrom" data-target="timepicker1" required/>
-                    <div class="input-group-append" data-target="#timepicker1" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group d-flex flex-row">
-                <label class="form-label">По: &nbsp;</label>
-                <div class='input-group date' id='timepicker2' data-target-input="nearest">
-                    <input type='text' class="form-control datetimepicker-input" th:name="dateTo" data-target="timepicker2" required/>
-                    <div class="input-group-append" data-target="#timepicker2" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-info form-control">Показать</button>
-            </div>
-        </div>
-    </form>
     <table class="table table-striped table-bordered table-hover">
         <thead class="thead-dark">
         <tr>
-            <th scope="col">№</th>
+            <th scope="col">#</th>
             <th scope="col">Доктор</th>
-            <th scope="col">Пациенты</th>
-            <th scope="col">Зарплата</th>
+            <th scope="col">Пациент</th>
+            <th scope="col">Дата посещения</th>
+            <th scope="col">Прошлое посещение</th>
+            <th scope="col">Всего</th>
+            <th scope="col">Клинике</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="doctor, stat: ${theListOfDoctorsWithSalaries}">
+        <tr th:each="tempPatient, stat: ${theListOfPatients}">
             <td th:text="${stat.index + 1}"/>
-            <td th:text="${doctor.key}"/>
-            <th th:text="${doctor.value.value}"/>
-            <td th:text="${doctor.value.key}"/>
+            <td th:text="${tempPatient.doctor.name}"/>
+            <td th:text="${tempPatient.patient}"/>
+            <td th:text="${tempPatient.consultationDate}"/>
+            <td th:text="${tempPatient.previousVisit}"/>
+            <td th:text="${tempPatient.price}"/>
+            <td th:text="${tempPatient.forClinic}"/>
         </tr>
         </tbody>
     </table>
+    <div class="col-md-12 d-flex justify-content-around">
+        <a th:href="@{/cons/listCurrentWeekConsultations(weekAdd=${weekAdd}-1)}"
+           class="btn btn-info btn-sm">Прошлая неделя</a>
+
+        <a th:href="@{/cons/listCurrentWeekConsultations(weekAdd=${weekAdd}+1)}"
+           class="btn btn-info btn-sm">Следующая неделя</a>
+    </div>
 </div>
+
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
 <script type="text/javascript">
-$(document).ready(function() {
-    $('dropdown-toggle').dropdown()
-});
-
-</script>
-<script type="text/javascript">
-   $(function () {
-       $('#timepicker1').datetimepicker({
-            format: 'L'
-       });
-       $('#timepicker2').datetimepicker({
-            useCurrent: false, //Important! See issue #1075
-            format: 'L'
-        });
-       $("#timepicker1").on("dp.change", function (e) {
-           $('#timepicker2').data("datetimepicker").minDate(e.date);
-       });
-       $("#timepicker2").on("dp.change", function (e) {
-           $('#timepicker1').data("datetimepicker").maxDate(e.date);
-       });
-   });
-
+    $(document).ready(function() {
+        $('dropdown-toggle').dropdown()
+    });
 </script>
 </body>
 

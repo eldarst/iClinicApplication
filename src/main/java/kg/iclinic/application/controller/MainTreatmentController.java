@@ -43,11 +43,10 @@ public class MainTreatmentController {
         TreatmentPatient patient = treatmentPatientService.findTreatmentPatientById(id);
         if (patient != null) {
             Date today = new Date();
-            TreatmentVisit visit = new TreatmentVisit(patient,today);
+            TreatmentVisit visit = new TreatmentVisit(patient, today);
             patient.addVisit(visit);
             patient.setLastVisit(today);
             treatmentVisitService.update(visit);
-            treatmentPatientService.update(patient);
         }
         return "redirect:/trt/listActivePatients";
     }
@@ -58,7 +57,6 @@ public class MainTreatmentController {
         if (patient != null && payment != null) {
             patient.setPaid(patient.getPaid() + payment);
             treatmentPatientService.update(patient);
-            System.out.println(patient.getPatientName() + "ID is " + id + " Payment is " + payment);
         }
         return "redirect:/trt/listActivePatients";
     }
@@ -72,6 +70,9 @@ public class MainTreatmentController {
             patient.deleteVisit(lastVisit);
             if (lastVisit != null)
                 treatmentVisitService.delete(lastVisit.getId());
+            TreatmentVisit oldLastVisit = patient.findLastVisit();
+            if (oldLastVisit != null)
+                patient.setLastVisit(oldLastVisit.getVisitDate());
             treatmentPatientService.update(patient);
         }
         return "redirect:/trt/listActivePatients";

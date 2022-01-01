@@ -3,6 +3,7 @@ package kg.iclinic.application.controller;
 import javafx.util.Pair;
 import kg.iclinic.application.entity.Doctor;
 import kg.iclinic.application.entity.Order;
+import kg.iclinic.application.model.Methods;
 import kg.iclinic.application.model.StatsPeriod;
 import kg.iclinic.application.service.DailyStatsService;
 import kg.iclinic.application.service.DoctorService;
@@ -44,47 +45,6 @@ public class StatsUziController {
 
     private static final Function<LocalDate, Date> parseLocal = java.sql.Date::valueOf;
 
-    private static final  StatsPeriod monthStats = new StatsPeriod((month) -> month.withDayOfMonth(1),
-            (periodStart) -> {
-                LocalDate nextSunday = periodStart.with(nextOrSame(SUNDAY));
-                return nextSunday.isAfter(periodStart) || nextSunday.equals(periodStart) ? nextSunday : nextSunday.withDayOfMonth(nextSunday.lengthOfMonth());
-            },
-            (period) -> period.plusDays(1),
-            (date) -> {
-                WeekFields weekFields = WeekFields.of(Locale.getDefault());
-                return date.get(weekFields.weekOfMonth());
-            },
-            (date) -> date.getDayOfWeek().getValue(),
-            (date) -> date.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("ru")),
-            (date) -> 0,
-            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5", "Неделя 6")),
-            new ArrayList<>(Arrays.asList("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье")),
-            "Месяц" ,
-             "Неделя",
-             "День недели");
-
-    private static final StatsPeriod yearStats = new StatsPeriod((lastDay) -> lastDay.withDayOfYear(1),
-            (periodStart) -> periodStart.withDayOfMonth(periodStart.lengthOfMonth()),
-            (period) -> {
-                LocalDate nextMonday = period.plusWeeks(1).with(previousOrSame(MONDAY));
-                return nextMonday.isAfter(period) ? nextMonday : nextMonday.withDayOfMonth(nextMonday.lengthOfMonth());
-            },
-            LocalDate::getMonthValue,
-            (date) -> {
-                WeekFields weekFields = WeekFields.of(Locale.getDefault());
-                return date.get(weekFields.weekOfMonth());
-            },
-            (date) -> date.getYear() + "-год",
-            (date) -> {
-                int ratio = date.with(nextOrSame(SUNDAY)).getDayOfMonth() - date.getDayOfMonth();
-                return ratio >= 0 ? ratio : date.withDayOfYear(date.lengthOfMonth()).getDayOfMonth() - date.getDayOfMonth();
-            },
-            new ArrayList<>(Arrays.asList("Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь")),
-            new ArrayList<>(Arrays.asList("Неделя 1", "Неделя 2", "Неделя 3", "Неделя 4", "Неделя 5", "Неделя 6")),
-            "Год",
-            "Месяц",
-            "Неделя");
-
     @GetMapping("/showDetailsOfOrderList")
     public String showDetailsOfTodayOrderList(@RequestParam(value = "daysAdd", required = false) Integer daysAdd,
                                               Model theModel) throws ParseException {
@@ -101,7 +61,7 @@ public class StatsUziController {
     public String showDetailsOfTodayOrderListMonthly(@RequestParam(value = "periodAdd", required = false) Integer periodAdd,
                                                      @RequestParam(value = "period", required = false, defaultValue = "month") String period,
                                                      Model theModel) throws ParseException {
-        StatsPeriod periodStats = (period.equals("month")) ? monthStats : yearStats;
+        StatsPeriod periodStats = (period.equals("month")) ? Methods.monthStats : Methods.yearStats;
         int periodAmountToAdd = (periodAdd != null) ? periodAdd : 0;
         LocalDate now = LocalDate.now();
         LocalDate lastDay = (period.equals("month"))
@@ -146,7 +106,7 @@ public class StatsUziController {
     public String getCurrentWeekSalaries(@RequestParam(value = "weekAdd", required = false) Integer weekAdd,
                                          Model theModel) {
         int weeksAdded = weekAdd != null ? weekAdd : 0;
-        LocalDate firstDayOfWeek = GetFirstDayOfTheWeek().plusDays(weeksAdded * 7);
+        LocalDate firstDayOfWeek = Methods.GetFirstDayOfTheWeek().plusDays(weeksAdded * 7);
         Date parsedFirstDay = parseLocal.apply(firstDayOfWeek);
         Date parsedLastDay = parseLocal.apply(firstDayOfWeek.plusDays(6));
 
@@ -157,10 +117,7 @@ public class StatsUziController {
         return "current-week-salary";
     }
 
-    private LocalDate GetFirstDayOfTheWeek() {
-        int daysFromWeekStart = LocalDate.now().getDayOfWeek().getValue();
-        return LocalDate.now().minusDays(daysFromWeekStart - 1);
-    }
+
 
     private HashMap<String, Pair<Double, Integer>> GetMappedSalary(Date dateFrom, Date dateTo) {
         List<Doctor> doctors = doctorService.findListOfDoctors();

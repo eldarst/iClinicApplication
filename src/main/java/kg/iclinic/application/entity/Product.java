@@ -1,9 +1,7 @@
 package kg.iclinic.application.entity;
 
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -13,7 +11,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "Products")
 @SQLDelete(sql = "UPDATE products SET is_deleted = true WHERE code=?")

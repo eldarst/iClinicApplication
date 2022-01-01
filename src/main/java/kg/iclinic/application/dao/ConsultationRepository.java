@@ -14,4 +14,5 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
     List<Consultation> findByConsultationDate(Date now);
     List<Consultation> findByConsultationDateBetween(Date start, Date end);
     List<Consultation> findByPatientAndAndDoctor(String patient, DoctorCons doctor);
+    List<Consultation> findByConsultationDateBetweenAndDoctor(Date start, Date end, DoctorCons doctor);
 }

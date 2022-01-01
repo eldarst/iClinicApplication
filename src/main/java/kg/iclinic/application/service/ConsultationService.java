@@ -15,5 +15,6 @@ public interface ConsultationService {
     List<Consultation> getConsultationsByDay(Date date);
     void deleteConsultation(Long consultationId);
     List<Consultation> getConsultationsBetweenDates(Date dateForm, Date dateTo);
+    List<Consultation> getDoctorConsultationsBetweenDates(Date dateFrom, Date dateTo, DoctorCons doctor);
     List<Consultation> findConsultationByPatientNameAndDoctor(String patient, DoctorCons doctor);
 }

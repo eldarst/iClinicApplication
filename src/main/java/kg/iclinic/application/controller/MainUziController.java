@@ -94,7 +94,7 @@ public class MainUziController {
         return "sort-by-date";
     }
 
-    @RequestMapping("/listOrderBetweenDates")
+    @GetMapping("/listOrderBetweenDates")
     public String getOrdersBetweenDates(@RequestParam(value = "dateFrom", required = false) String dateFrom,
                                         @RequestParam(value = "dateTo", required = false) String dateTo,
                                         @RequestParam(value = "doctorName", required = false) String doctor,
@@ -105,7 +105,6 @@ public class MainUziController {
 
         theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());
         theModel.addAttribute("theListOfPatients", sortedOrders);
-        theModel.addAttribute("theListOfDoctor", doctorService.findListOfDoctors());
         theModel.addAttribute("dateFrom", firstDate);
         theModel.addAttribute("dateTo", secondDate);
         theModel.addAttribute("doctorName", doctor);
